@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <WasmGenerateAppBundle>true</WasmGenerateAppBundle>
+    <WasmMainJSPath>wwwroot/main.js</WasmMainJSPath>
+    <PublishTrimmed>false</PublishTrimmed>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <EmccExtraLDFlags>-s MAX_WEBGL_VERSION=2</EmccExtraLDFlags>
+    <WasmAppDir>$(MSBuildThisFileDirectory)../../.runtime/browser-world</WasmAppDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../OpenRA.Platforms.Web/OpenRA.Platforms.Web.csproj" />
+    <ProjectReference Include="../OpenRA.Mods.Frontier.Web/OpenRA.Mods.Frontier.Web.csproj" />
+    <NativeFileReference Include="../OpenRA.Platforms.Web/native/webgl_shim.c" />
+    <WasmExtraFilesToDeploy Include="wwwroot/**/*" Exclude="wwwroot/main.js" />
+  </ItemGroup>
+  <Target Name="CopyWorldWebAssets" AfterTargets="Build">
+    <ItemGroup><WorldWebAsset Include="wwwroot/**/*" /></ItemGroup>
+    <Copy SourceFiles="@(WorldWebAsset)" DestinationFolder="$(WasmAppDir)/%(RecursiveDir)" SkipUnchangedFiles="false" />
+  </Target>
+</Project>

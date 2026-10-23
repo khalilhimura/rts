@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "90d0dbf3c8e363dcfe416672877a8de01d889e91",
+  "sourceDirty": true,
+  "engineCommit": "524b6abdf1874b0132a7b06c1f89c7012f60124c",
+  "patchDigest": "952b6b69d73c",
+  "files": 366,
+  "rawBytes": 37044083,
+  "gzipBytes": 15210340,
+  "largestFile": "_framework/System.Private.CoreLib.wasm",
+  "largestFileBytes": 4199705,
+  "cfStaticAssetLimitBytes": 26214400,
+  "assemblySha256": {
+    "OpenRA.Mods.Common.wasm": "3493768785226d9fcc61335dbb29f2cd2e43ae28c7014a4546e5f56c1d9f4f4d",
+    "OpenRA.Platforms.Web.wasm": "26ef252a17358139a48d30085a9da46c0381e642c9005d04c29f976a03393bfe",
+    "OpenRA.Mods.Frontier.wasm": "cdd929ff174defe1981216178c7cfd0415c768028066443ed3581e392649c55c",
+    "OpenRA.Game.wasm": "5fb03c7fafd4c65ceee63e7a017bc6a716db9de9c307e8f51993db598721786e"
+  },
+  "contentManifestSha256": "4540eef562476e91852e01a3588d507f0a57b5c27469c2a848343e6c5441ceab"
+}

@@ -11,6 +11,7 @@ Verified 2026-10-23. This repository is a modified OpenRA SDK project, not an EA
 | SDK UI | SDK `mods/example/chrome/assets/dialog.png`, `glyphs.png`; cursor `default.png`; editor markers `mapeditor.png`, `mpspawn.png` and corresponding YAML | Retained from the above GPL SDK baseline; original chrome definitions adapted. The example logo was replaced by an original mark. |
 | SDK packaging artwork | Same pinned SDK, `packaging/artwork/*.png` | Retained unchanged under the SDK baseline license; placeholder installer icons/backgrounds are not used by the desktop prototype; packaging remains unvalidated |
 | Common UI and fonts | Pinned engine `mods/common`, including GNU FreeFont `FreeSans.ttf` / `FreeSansBold.ttf` | GPL according to engine `AUTHORS`; fetched with source, not duplicated or relicensed as CC0 |
+| Browser platform, DOM input and GLSL | [openra-wasm `wasm` branch](https://github.com/Baronvonbonbon/openra-wasm/tree/424fb8b08d98de057015bc2cfcaddeaf10f3cc14), commit `424fb8b08d98de057015bc2cfcaddeaf10f3cc14` | GPL-3.0-or-later; original hashes/adaptations in `browser/platform-imports.json`, preserved headers and `browser/licenses/`; no fork mods or retail archives imported |
 
 Engine archive: `https://github.com/OpenRA/OpenRA/archive/524b6abdf1874b0132a7b06c1f89c7012f60124c.zip`
 

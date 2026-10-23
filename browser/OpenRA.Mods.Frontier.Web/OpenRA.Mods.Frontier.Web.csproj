@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>OpenRA.Mods.Frontier</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <BrowserEngineRoot Condition="'$(BrowserEngineRoot)' == ''">$(MSBuildThisFileDirectory)../../engine</BrowserEngineRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(BrowserEngineRoot)/OpenRA.Mods.Common/OpenRA.Mods.Common.csproj" />
+    <Compile Include="../../OpenRA.Mods.Frontier/**/*.cs" Exclude="../../OpenRA.Mods.Frontier/obj/**;../../OpenRA.Mods.Frontier/FrontierLoadScreen.cs" />
+    <Compile Include="FrontierLoadScreen.cs" />
+  </ItemGroup>
+</Project>

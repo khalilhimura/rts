@@ -1,9 +1,9 @@
-name: Browser compatibility spike
+name: Browser port validation
 on:
   push:
     branches: [feat/browser-wasm-spike]
   pull_request:
-    paths: ['browser/**', 'tools/*browser-probe.py', '.github/workflows/browser-spike.yml']
+    paths: ['browser/**', 'tools/*browser*.py', 'mods/**', 'OpenRA.Mods.Frontier/**', '.github/workflows/browser-spike.yml']
 permissions:
   contents: read
 jobs:
@@ -33,4 +33,34 @@ jobs:
           path: |
             .runtime/browser-evidence
             .runtime/browser-probe/probe-build.json
+          if-no-files-found: warn
+  world:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.426
+      - run: test "$(dotnet --version)" = "8.0.426"
+      - run: dotnet workload install wasm-tools --skip-manifest-update
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python3 -m pip install -r browser/requirements-test.txt
+      - run: python3 -m playwright install --with-deps chromium
+      - run: python3 tools/build-browser-world.py
+      - run: python3 tools/check-browser-style.py
+      - run: python3 tools/check-browser-dependencies.py
+      - name: Actual browser skirmish acceptance
+        timeout-minutes: 35
+        run: python3 tools/smoke-browser-world.py --full-gameplay
+      - name: Upload actual world evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-world-${{ github.sha }}
+          path: |
+            .runtime/browser-world-evidence
+            .runtime/browser-world/world-build.json
           if-no-files-found: warn

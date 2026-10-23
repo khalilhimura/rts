@@ -1,0 +1,52 @@
+--- a/OpenRA.Game/Map/ActorReference.cs
++++ b/OpenRA.Game/Map/ActorReference.cs
+@@ -70,7 +70,7 @@
+ 			if (type == null)
+ 				throw new InvalidDataException($"Unknown initializer type '{initInstance[0]}Init'");
+ 
+-			var init = (ActorInit)FormatterServices.GetUninitializedObject(type);
++			var init = (ActorInit)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(type);
+ 			if (initInstance.Length > 1)
+ 				type.GetField(nameof(ActorInit.InstanceName)).SetValue(init, initInstance[1]);
+ 
+--- a/OpenRA.Game/FieldLoader.cs
++++ b/OpenRA.Game/FieldLoader.cs
+@@ -47,6 +47,7 @@
+ 				Missing = missing;
+ 			}
+ 
++			[Obsolete("Formatter-based serialization is obsolete.")]
+ 			public override void GetObjectData(SerializationInfo info, StreamingContext context)
+ 			{
+ 				base.GetObjectData(info, context);
+--- a/OpenRA.Mods.Common/Scripting/Global/ActorGlobal.cs
++++ b/OpenRA.Mods.Common/Scripting/Global/ActorGlobal.cs
+@@ -36,7 +36,7 @@
+ 				throw new LuaException($"Unknown initializer type '{initInstance[0]}'");
+ 
+ 			// Construct the ActorInit.
+-			var init = (ActorInit)FormatterServices.GetUninitializedObject(initType);
++			var init = (ActorInit)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(initType);
+ 			if (initInstance.Length > 1)
+ 				initType.GetField(nameof(ActorInit.InstanceName)).SetValue(init, initInstance[1]);
+ 
+--- a/OpenRA.Game/Map/ActorReference.cs
++++ b/OpenRA.Game/Map/ActorReference.cs
+@@ -14,7 +14,6 @@
+ using System.Collections.Generic;
+ using System.IO;
+ using System.Linq;
+-using System.Runtime.Serialization;
+ using OpenRA.Primitives;
+ using OpenRA.Traits;
+ 
+--- a/OpenRA.Mods.Common/Scripting/Global/ActorGlobal.cs
++++ b/OpenRA.Mods.Common/Scripting/Global/ActorGlobal.cs
+@@ -13,7 +13,6 @@
+ using System.Collections.Generic;
+ using System.Linq;
+ using System.Reflection;
+-using System.Runtime.Serialization;
+ using Eluant;
+ using OpenRA.Mods.Common.Traits;
+ using OpenRA.Primitives;

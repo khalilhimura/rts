@@ -1,6 +1,6 @@
 # Browser port — current status
 
-**Browser-native single-player is the chosen direction. It is not playable or deployed yet.** No remote desktop or replacement engine is being built. The working desktop baseline remains at `main` commit `70a1ff084e9ff5557bab26c17f1588cd678293ae` until real browser acceptance passes. Then remove desktop entrypoints, packaging, workflows, dependencies and documentation that the browser no longer needs, preserving shared engine code and recoverable Git history. Native desktop/mobile apps are deferred until demand warrants them.
+**The actual Frontier world now runs locally in Chromium; full browser acceptance and deployment are pending.** No remote desktop or replacement engine is being built. The working desktop baseline remains at `main` commit `70a1ff084e9ff5557bab26c17f1588cd678293ae` until real browser acceptance passes. Then remove desktop entrypoints, packaging, workflows, dependencies and documentation that the browser no longer needs, preserving shared engine code and recoverable Git history. Native desktop/mobile apps are deferred until demand warrants them.
 
 ## Architecture and cost
 
@@ -12,6 +12,6 @@ The environment's earlier read-only Cloudflare token/account API requests failed
 
 ## Tested milestone
 
-The separate browser feature branch adds a **compatibility probe**, not a game. It executes the actual pinned OpenRA/Common/Frontier managed assemblies in Chromium's WebAssembly runtime, resolves inherited Frontier actor rules, loads a production trait through OpenRA reflection, decodes the CC0 eight-direction scout sheet with OpenRA, verifies every uploaded RGBA pixel through WebGL2 readback, and tests scaled pointer input through the real engine input interface.
+The browser feature branch now boots the actual Salt Basin map, OpenRA world renderer and HUD in WebGL2, using the original assets and fonts. A real local session starts the human and Pioneer AI through the existing in-memory order connection. Browser events have selected and moved a scout and constructed/placed the generator, refinery and fabricator; both players have delivered salvage. Combat-unit production and full combat/win-loss acceptance remain under test.
 
-See [probe instructions, measurements, source review and remaining gates](../browser/README.md). No `World` or AI is started by the probe. Selection, movement, building placement, production, harvesting, combat and win/loss remain unverified in browser. Desktop gameplay evidence does not satisfy those browser gates.
+The earlier isolated compatibility probe remains a separate check of inherited rules, reflection, PNG decoding, full RGBA GPU readback and scaled pointer input. It starts no world. See [world/probe instructions, measurements, source review and remaining gates](../browser/README.md). Desktop gameplay evidence does not satisfy the browser gates. Nothing has been deployed to Cloudflare.

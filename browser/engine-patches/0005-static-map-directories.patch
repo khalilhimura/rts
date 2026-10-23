@@ -1,0 +1,21 @@
+--- a/OpenRA.Game/Map/MapDirectoryTracker.cs
++++ b/OpenRA.Game/Map/MapDirectoryTracker.cs
+@@ -35,6 +35,9 @@
+ 			this.package = package;
+ 			this.classification = classification;
+ 
++			// Browser content is immutable and versioned; no native directory watching.
++			if (System.OperatingSystem.IsBrowser()) return;
++
+ 			watcher = new FileSystemWatcher(package.Name);
+ 			watcher.Changed += (object sender, FileSystemEventArgs e) => AddMapAction(MapAction.Update, e.FullPath);
+ 			watcher.Created += (object sender, FileSystemEventArgs e) => AddMapAction(MapAction.Add, e.FullPath);
+@@ -47,7 +50,7 @@
+ 
+ 		public void Dispose()
+ 		{
+-			watcher.Dispose();
++			watcher?.Dispose();
+ 		}
+ 
+ 		void AddMapAction(MapAction mapAction, string fullpath, string oldFullPath = null)

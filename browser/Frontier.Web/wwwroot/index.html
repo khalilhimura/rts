@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frontier Collective — browser development build</title>
+<style>body{margin:0;background:#101719;color:#e7eeee;font:14px system-ui}canvas{display:block;width:min(100vw,1280px);height:auto;outline:0}#status{padding:8px;white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<canvas id="canvas" width="1280" height="800" tabindex="0" aria-label="Frontier Collective battlefield"></canvas>
+<div id="status" role="status">Loading original game content…</div>
+<footer><button id="restart" type="button">New skirmish</button> · <a href="https://github.com/khalilhimura/rts/tree/__SOURCE_COMMIT__">Source (GPL-3.0-or-later)</a> · <a href="licenses/README.md">Asset licenses</a></footer>
+<script type="module">
+document.querySelector('#restart').addEventListener('click',()=>location.reload());
+import('./main.js').catch(error => {
+    window.frontierGame={status:'failed',error:String(error),history:[]};
+    document.querySelector('#status').textContent=String(error);console.error(error);
+});
+</script></html>

@@ -1,6 +1,28 @@
-# Browser-native port: first compatibility gate
+# Browser-native port
 
-**This branch contains a tested diagnostic, not a playable browser game.** The product direction is browser-only. Keep the working desktop baseline recoverable until browser gameplay passes the acceptance gate below; do not invest in native app packaging.
+This branch now contains the actual OpenRA browser world as well as the earlier compatibility diagnostic. Salt Basin, the HUD, original fonts/sprites, two-player simulation, Pioneer AI, selection, movement and building placement have run in Chromium. Full match acceptance and hosted validation are still in progress; this is not a deployed browser product. Keep the desktop baseline recoverable until the complete acceptance gate passes.
+
+## Run the actual world
+
+Use the pinned .NET SDK 8.0.426, its `wasm-tools` workload, Python 3, `curl`, and `patch`. The browser host and isolated engine copy target .NET 8; no native game process, socket server, SDL, OpenAL or FreeType is used by the browser host.
+
+```sh
+dotnet workload install wasm-tools --skip-manifest-update
+python3 -m pip install -r browser/requirements-test.txt
+python3 -m playwright install chromium
+python3 tools/build-browser-world.py
+python3 tools/check-browser-style.py
+python3 tools/check-browser-dependencies.py
+python3 tools/smoke-browser-world.py --full-gameplay
+```
+
+For manual play, serve `.runtime/browser-world/` on loopback, for example `python3 -m http.server 8080 --bind 127.0.0.1 --directory .runtime/browser-world`, and open `http://127.0.0.1:8080`. It immediately starts Salt Basin against Pioneer AI. Left click/drag selects; right click moves or attacks. Build Generator → Refinery → Fabricator, then queue vehicles. The refinery's crawler harvests automatically. Destroy opposing structures to win. The browser needs WebGL2 and WebAssembly, and a secure context (HTTPS or localhost) for integrity checks. The current prototype is silent.
+
+`tools/prepare-browser-engine.py` applies the tracked patches and additions to a separate hash-addressed copy of the verified engine. It preserves `engine/` and rejects edits to generated source instead of overwriting them. `platform-imports.json` pins the imported GPL platform/input/GLSL files to their original hashes; their copyright headers, COPYING and AUTHORS are retained. The font backend rasterizes the exact staged GNU FreeSans bytes using browser Canvas. The fork's modified FreeType error handling was not adopted.
+
+The browser loop executes the original engine's logic/render scheduling one step per animation callback. Existing `EchoConnection` carries local commands, and trait-defined lobby defaults configure the real world and AI. Rules load synchronously because the browser runtime is single-threaded; static map discovery has no native directory watcher; unsupported large-object-heap compaction is skipped. No replacement simulation is included. Lua campaigns and multiplayer are outside this single-map milestone.
+
+The smoke test blocks requests outside its loopback origin and drives real canvas events; state exports only observe the actual engine. It checks tick progress with bounded waits. Evidence is written to `.runtime/browser-world-evidence/`, including console/state snapshots, screenshots and the dependency audit. `world-build.json` records content/assembly hashes, source-patch digest, download measurements and the 25 MiB per-file gate. Headless SwiftShader results establish functionality, not representative gameplay performance.
 
 ## Run the probe
 
@@ -47,9 +69,9 @@ Exact inspected references and license evidence are recorded in [upstream-source
 
 ## Next gates
 
-1. **Whole-world browser boot:** select/pin the browser runtime and platform source; keep the tested engine semantics or explicitly review a baseline migration. Track browser source/patches in Git. Stage the original mod, fonts, shaders and settings before initialization. Adapt `IPlatform`, GL bindings, font rasterization, the blocking game loop, background logging and filesystem assumptions. The existing `Platform` enum does not identify browser and its OS probe launches `uname`; `Log` starts a worker thread. Verify a real Frontier world and HUD render repeatedly with a responsive page. The public experimental fork's mod-loading hang is unresolved evidence, not a completed gate.
-2. **Local simulation and AI:** adapt skirmish/session setup to OpenRA's existing `EchoConnection`, avoiding the desktop local TCP server and native sockets. Drive real world ticks from browser scheduling, preserve deterministic commands/randomness, and verify Pioneer AI construction and unit orders. This is a meaningful engine integration; a rendered sprite or ticking dummy loop cannot satisfy it.
+1. **Whole-world browser boot:** implemented locally with tracked platform sources/patches, original content, Canvas font rasterization and a nonblocking engine loop. The public fork's mod-loading hang was traced to synchronous waits for background rule-loading tasks; browser rule loading now uses the engine's existing synchronous path. Static map watching and unsupported GC compaction were adapted without changing game rules. Hosted exact-commit validation remains required.
+2. **Local simulation and AI:** the actual `EchoConnection` session runs two players with trait-defined defaults and a fixed random seed. Pioneer AI has constructed its base and delivered salvage; both economies and all human combat vehicle production have been observed. Full combat acceptance remains in progress.
 3. **Playable parity:** automate real browser canvas input and observe selection, movement, all four structures, scout/tank/artillery production, both harvesting economies, projectiles/damage/kills, AI attacks and decisive win/loss. Test resize, context loss, focus/pause and restart. Compare recorded commands/state against the desktop baseline where applicable. No merge to main and no playable-deployment claim before this passes.
 4. **Browser-only product:** remove desktop application entrypoints, packaging/workflows, desktop-only dependencies and documentation after gate 3, retaining shared browser-required code and history. Measure download size, memory, frame/tick timing on representative browsers; then deploy validated static files through the existing authorized Cloudflare path. No Worker is needed for single-player simulation. Native apps and multiplayer are deferred.
 
-The first gate is the critical uncertainty. The tested probe eliminates several managed-code/asset/input questions, but does not establish the cost or performance of a complete world. This remains a multi-stage engine port, not an SDK export switch. [Rust assessment](../docs/RUST-ASSESSMENT.md) describes what to benchmark before considering a language change.
+The actual world clears the initial integration barrier, but complete gameplay, browser lifecycle handling and representative performance still need validation. This remains a multi-stage engine port. [Rust assessment](../docs/RUST-ASSESSMENT.md) describes what to benchmark before considering a language change.

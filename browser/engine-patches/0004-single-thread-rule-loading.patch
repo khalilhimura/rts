@@ -1,0 +1,20 @@
+--- a/OpenRA.Game/GameRules/Ruleset.cs
++++ b/OpenRA.Game/GameRules/Ruleset.cs
+@@ -145,7 +145,7 @@
+ 				ruleset = new Ruleset(actors, weapons, voices, notifications, music, null, modelSequences);
+ 			}
+ 
+-			if (modData.IsOnMainThread)
++			if (modData.IsOnMainThread && !System.OperatingSystem.IsBrowser())
+ 			{
+ 				modData.HandleLoadingProgress();
+ 
+@@ -207,7 +207,7 @@
+ 				ruleset = new Ruleset(actors, weapons, voices, notifications, music, terrainInfo, modelSequences);
+ 			}
+ 
+-			if (modData.IsOnMainThread)
++			if (modData.IsOnMainThread && !System.OperatingSystem.IsBrowser())
+ 			{
+ 				modData.HandleLoadingProgress();
+ 

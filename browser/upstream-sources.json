@@ -15,7 +15,8 @@
     "licenseEvidence": "COPYING and file copyright headers on the wasm branch",
     "sourceDownloaded": "Sparse checkout of engine/platform code and GLSL only; no mods or game archives",
     "codeImportedIntoProbe": false,
-    "status": "Reusable platform research; net10.0-browser; main.js says full engine startup still hangs during mod loading"
+    "status": "Selected WebGL2/input/GLSL platform sources backported to the pinned engine; exact imports and modifications in platform-imports.json",
+    "codeImportedIntoWorld": true
   },
   "openHvExport": {
     "repository": "https://github.com/hakyong-tae/openhv-web",

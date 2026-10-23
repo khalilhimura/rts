@@ -1,0 +1,15 @@
+--- a/OpenRA.Game/Game.cs
++++ b/OpenRA.Game/Game.cs
+@@ -234,6 +234,12 @@
+ 
+ 		public static void RestartGame()
+ 		{
++			if (System.OperatingSystem.IsBrowser())
++			{
++				BrowserRestartRequested = true;
++				return;
++			}
++
+ 			var replay = OrderManager.Connection as ReplayConnection;
+ 			var replayName = replay?.Filename;
+ 			var lobbyInfo = OrderManager.LobbyInfo;
