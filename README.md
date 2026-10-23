@@ -6,7 +6,7 @@ A first playable, original RTS skirmish built on **OpenRA Mod SDK 20250330**. On
 
 ## Run
 
-Linux prerequisites: .NET 8 SDK **and .NET 6 runtime**, Python 3, `make`, `curl`, and a desktop with OpenGL 3.2+ (Mesa software rendering also worked). OpenRA's native packages provide its runtime dependencies; SDL2, OpenAL and FreeType must be loadable. The tested toolchain was SDK 8.0.426 / runtime 6.0.36 on Debian 13. The pinned engine still targets the retired .NET 6 runtime; see [validation and limitations](docs/VALIDATION.md).
+Linux prerequisites: .NET 8 SDK **and .NET 6 runtime**, Python 3, `make`, `curl`, and a desktop with OpenGL 3.2+ (Mesa software rendering also worked). OpenRA's native packages provide its runtime dependencies; SDL2, OpenAL and FreeType must be loadable. The tested toolchain was SDK **8.0.426** (pinned by `global.json`) / runtime 6.0.36 on Debian 13. The pinned engine still targets the retired .NET 6 runtime; see [validation and limitations](docs/VALIDATION.md).
 
 ```sh
 make                    # fetches SHA-256-verified OpenRA source, then builds
@@ -51,6 +51,10 @@ python3 tools/generate-content.py
 ./tools/check.sh
 ```
 
-`tools/check.sh` runs five integrity/reachability/acquisition tests, OpenRA rules and localization lint with warnings as errors, actual sprite-frame decoding, and interface checks. See [desktop smoke instructions and recorded results](docs/VALIDATION.md), [exact sources and licenses](docs/PROVENANCE.md), and the [roadmap](docs/ROADMAP.md). Engine sources, compiled output, caches and runtime state are ignored by Git.
+`tools/check.sh` runs seven integrity/reachability/acquisition/audit tests, OpenRA rules and localization lint with warnings as errors, actual sprite-frame decoding, and interface checks. Run `make check` for strict code/style checks and `python3 tools/check-dependencies.py` for a direct/transitive advisory gate. The effective NuGet client is patched to 6.12.5. See [desktop smoke instructions and recorded results](docs/VALIDATION.md), [exact sources and licenses](docs/PROVENANCE.md), and the [roadmap](docs/ROADMAP.md). Engine sources, compiled output, caches and runtime state are ignored by Git.
 
 Code and rules are GPL-3.0-or-later. New art and the imported PixVoxel models are CC0. SDK UI assets retain their upstream licensing and notices. No retail game content or game archives are needed. See [COPYING](COPYING) and [licenses](licenses/README.md). The original SDK guide is retained in [docs/SDK-README.upstream.md](docs/SDK-README.upstream.md).
+
+## Browser play
+
+There is currently no deployed browser version of this project. The native desktop client needs a significant source-verified Wasm port, or a persistent Linux host with authenticated browser streaming. See [the assessed options, costs and access blockers](docs/BROWSER.md). The desktop game has not been substituted with another engine or a static preview.

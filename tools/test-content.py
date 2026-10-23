@@ -15,8 +15,27 @@ spec = importlib.util.spec_from_file_location('fetch_engine', ROOT/'tools/fetch-
 acquisition = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(acquisition)
 
+audit_spec = importlib.util.spec_from_file_location('check_dependencies', ROOT/'tools/check-dependencies.py')
+audit = importlib.util.module_from_spec(audit_spec)
+audit_spec.loader.exec_module(audit)
+
 
 class ContentTests(unittest.TestCase):
+    def test_audit_rejects_transitive_advisory(self):
+        report = {'version': 1, 'projects': [{'path': name} for name in ['mod', 'game', 'common']]}
+        report['projects'][1]['frameworks'] = [{'transitivePackages': [{
+            'id': 'Example.Vulnerable', 'resolvedVersion': '1.0',
+            'vulnerabilities': [{'severity': 'Low', 'advisoryurl': 'https://example.invalid/advisory'}]
+        }]}]
+        assets = {'libraries': {'NuGet.CommandLine/6.12.5': {}}}
+        with self.assertRaisesRegex(ValueError, 'Vulnerable dependency'):
+            audit.validate(report, assets)
+
+    def test_audit_rejects_unpatched_client(self):
+        report = {'version': 1, 'projects': [{'path': name} for name in ['mod', 'game', 'common']]}
+        with self.assertRaisesRegex(ValueError, 'Expected patched'):
+            audit.validate(report, {'libraries': {'NuGet.CommandLine/6.12.1': {}}})
+
     def test_cc0_sources_match_pinned_hashes(self):
         lock = json.loads((ROOT/'assets/sources/pixvoxel/manifest.json').read_text())
         for name, checksum in lock['files'].items():

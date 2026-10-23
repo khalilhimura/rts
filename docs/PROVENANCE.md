@@ -16,7 +16,7 @@ Engine archive: `https://github.com/OpenRA/OpenRA/archive/524b6abdf1874b0132a7b0
 
 SHA-256: `401b46b32ebddd04ea5ad342528195afe555d0800a7bbb5e07d00f3eb5b9e2ec`
 
-`mod.config` and `tools/fetch-engine.py` pin and verify this archive before extraction. A source receipt is stored inside ignored `engine/`. Existing directories with a different/missing receipt are preserved. Unlike the stock SDK acquisition script, this project's script keeps `CheckFluentReferences.cs`; full localization lint is enabled. No engine gameplay source changes are required. The stable engine's source includes unused classic-game mod definitions, but this project does not install their retail content.
+`mod.config` and `tools/fetch-engine.py` pin and verify this archive before extraction. A source receipt is stored inside ignored `engine/`. Existing directories with a different/missing receipt are preserved. Unlike the stock SDK acquisition script, this project's script keeps `CheckFluentReferences.cs`; full localization lint is enabled. No engine gameplay source changes are required. The follow-up root `Directory.Build.targets` overrides the effective `NuGet.CommandLine` package from upstream 6.12.1 to patched 6.12.5 for GHSA-g4vj-cjjj-v7hg; the engine archive stays intact. `global.json` pins SDK 8.0.426. The stable engine's source includes unused classic-game mod definitions, but this project does not install their retail content.
 
 ## PixVoxel models
 

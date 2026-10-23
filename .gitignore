@@ -54,4 +54,4 @@ __pycache__/
 *.log
 engine.zip
 engine_temp/
-!docs/evidence/desktop-smoke.log
+!docs/evidence/*smoke.log

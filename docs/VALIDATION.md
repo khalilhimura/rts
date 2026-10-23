@@ -6,7 +6,19 @@ Work ran in the selected `rts` cloud environment at `/workspace/rts`. Before edi
 
 Debian 13 x86_64; local .NET SDK 8.0.426 and runtime 6.0.36 installed under `/workspace/toolchain/dotnet`. No system installation, credentials or permission expansion was performed. Native desktop testing used the environment's existing Xorg dummy driver at `:99`, SDL2, Mesa llvmpipe / OpenGL 4.5, 1280×800. This was an actual OpenRA desktop client with real mouse input, not a browser recreation or a headless-only simulation. There is no audio output device; audio playback has not been verified and the prototype's notification pools are silent.
 
-## Checks
+## CI repair follow-up
+
+Hosted run [39904828668](https://github.com/khalilhimura/rts/actions/runs/39904828668) on the first delivered commit failed its explicit Debug style build with 14 upstream IDE diagnostics. Release/content checks passed. The runner had installed SDKs 6/8 but selected preinstalled SDK 10.0.401; the initial repository lacked `global.json`.
+
+The follow-up pins SDK **8.0.426** with roll-forward disabled and asserts it in CI. Root `Directory.Build.targets` updates the effective `NuGet.CommandLine` reference to the advisory's patched **6.12.5** without editing the verified engine archive. CI now runs unmodified strict `make check` with **no** NU1901 exception. `tools/check-dependencies.py` fails on reported direct or transitive vulnerabilities, validates the actual resolved patched client, and rejects incomplete/error reports; regression tests exercise vulnerable transitive and unpatched cases. All seven content tests, full rules/Fluent checks, sprite decoding, strict `make check` and the transitive audit passed locally after this fix. The package audit checks the three projects loaded by Frontier (mod, Common and Game), including their transitive NuGet dependencies. The strict Debug build reports zero warnings and errors.
+
+The engine still targets retired .NET 6, producing NETSDK1138 warnings in its Release executable projects; this is disclosed and not hidden or waived. Package audit success is not a claim of a supported runtime or production security review. A supported-runtime engine migration remains on the roadmap.
+
+`tools/smoke-desktop.py` adds real XTest mouse-driven desktop gameplay validation (no injected state) for selection/movement, all buildings, production, both economies and a decisive combat result. It passed locally after the dependency fix through tick **4928**, with real destruction leading to human `Lost` / AI `Won`; see `docs/evidence/ci-repair-smoke.log`. Hosted CI runs it under an isolated virtual X display and uploads its evidence. Hosted CI status for the final exact feature/main commits must be verified from their runs, rather than inferred from local results.
+
+Browser delivery is assessed separately in [BROWSER.md](BROWSER.md): no browser deployment has been made.
+
+## Original milestone checks (historical, before CI repair)
 
 | Check | Result |
 |---|---|
@@ -22,7 +34,7 @@ Debian 13 x86_64; local .NET SDK 8.0.426 and runtime 6.0.36 installed under `/wo
 | Generated content reproduced from checked-in sources | Byte-for-byte check recorded in evidence |
 | Windows/macOS builds, installer packaging, network multiplayer/desync, save/load, editor | Not validated |
 
-The pinned engine references `NuGet.CommandLine 6.12.1`, for which NuGet reports [GHSA-g4vj-cjjj-v7hg](https://github.com/advisories/GHSA-g4vj-cjjj-v7hg). It also targets the retired .NET 6 runtime. These are upstream baseline limitations, not suppressed globally. CI retains the advisory as a warning while treating source/style diagnostics as errors. Upgrade this baseline before a distributable release.
+Before the follow-up override, the pinned engine referenced `NuGet.CommandLine 6.12.1`, for which NuGet reports [GHSA-g4vj-cjjj-v7hg](https://github.com/advisories/GHSA-g4vj-cjjj-v7hg). It also targets the retired .NET 6 runtime. These are upstream baseline limitations, not suppressed globally. The original CI retained the advisory as a warning. The follow-up above removes that exception and resolves the advisory; upgrade the retired runtime before a distributable release.
 
 ## Desktop outcomes
 
@@ -53,4 +65,4 @@ On a cloud runner without a display, build/rules/sprite/content checks remain av
 
 ## Review/publishing
 
-The repository remote had no branch refs before this work. The implementation and evidence were committed and successfully pushed using the environment's Git connection to [feat/first-playable-skirmish](https://github.com/khalilhimura/rts/tree/feat/first-playable-skirmish). GitHub CLI separately reported its `GH_TOKEN` invalid, but that did not prevent the Git push. No credentials were generated. There is no separate existing base branch against which to open a draft PR, so no PR was created. No base branch was invented, and no merge, installer release or public deployment was performed.
+The repository remote had no branch refs before this work. The original implementation and evidence were committed and successfully pushed using the environment's Git connection to [feat/first-playable-skirmish](https://github.com/khalilhimura/rts/tree/feat/first-playable-skirmish). GitHub CLI separately reported its `GH_TOKEN` invalid, but that did not prevent the Git push. No credentials were generated. There is no separate existing base branch against which to open a draft PR, so no PR was created. At that original milestone no base branch, merge, installer release or public deployment was created. Subsequent user authorization permits safe initial `main` creation after the repaired feature commit is green; preserve its existing history.

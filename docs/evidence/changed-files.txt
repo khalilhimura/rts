@@ -8,6 +8,7 @@
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 COPYING
+Directory.Build.targets
 Frontier.sln
 Makefile
 OpenRA.Mods.Frontier/CheckFrontierSprites.cs
@@ -24,12 +25,15 @@ assets/sources/pixvoxel/Tank_Large_W.vox
 assets/sources/pixvoxel/Tank_S_Large_W.vox
 assets/sources/pixvoxel/Truck_Large_W.vox
 assets/sources/pixvoxel/manifest.json
+docs/BROWSER.md
 docs/PROVENANCE.md
 docs/ROADMAP.md
 docs/SDK-README.upstream.md
 docs/VALIDATION.md
 docs/evidence/changed-files.txt
 docs/evidence/check-results.txt
+docs/evidence/ci-repair-checks.txt
+docs/evidence/ci-repair-smoke.log
 docs/evidence/combat.png
 docs/evidence/desktop-smoke.log
 docs/evidence/desktop-summary.json
@@ -37,6 +41,7 @@ docs/evidence/generated-content.json
 docs/evidence/skirmish.png
 docs/evidence/xorg-dummy.conf
 fetch-engine.sh
+global.json
 launch-dedicated.cmd
 launch-dedicated.sh
 launch-game.cmd
@@ -128,11 +133,13 @@ packaging/windows/buildpackage.nsi
 packaging/windows/buildpackage.sh
 play.cmd
 play.sh
+tools/check-dependencies.py
 tools/check-runtime-log.py
 tools/check.sh
 tools/fetch-engine.py
 tools/generate-content.py
 tools/requirements.txt
+tools/smoke-desktop.py
 tools/test-content.py
 utility.cmd
 utility.sh

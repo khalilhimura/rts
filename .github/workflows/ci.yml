@@ -13,12 +13,27 @@ jobs:
           dotnet-version: |
             6.0.428
             8.0.426
+      - name: Verify pinned SDK
+        run: |
+          test "$(dotnet --version)" = "8.0.426"
+          dotnet --info
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - run: python3 -m pip install -r tools/requirements.txt
       - run: make
       - run: ./tools/check.sh
-      # Retain the pinned engine's NU1901 advisory as a warning; all code style
-      # diagnostics remain errors. The stock `make check` fails on this advisory.
-      - run: dotnet build Frontier.sln -c Debug --no-restore -warnaserror -warnnotaserror:NU1901
+      - run: make check
+      - run: python3 tools/check-dependencies.py
+      - name: Desktop gameplay smoke
+        timeout-minutes: 12
+        run: xvfb-run -a -s "-screen 0 1280x800x24" python3 tools/smoke-desktop.py
+      - name: Upload desktop evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-smoke-${{ github.sha }}
+          path: |
+            .runtime/ci-desktop-smoke.log
+            .runtime/ci-desktop-smoke.png
+          if-no-files-found: warn
