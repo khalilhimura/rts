@@ -1,0 +1,23 @@
+test_acquisition_preserves_existing_engine (__main__.ContentTests.test_acquisition_preserves_existing_engine) ... ok
+test_cc0_sources_match_pinned_hashes (__main__.ContentTests.test_cc0_sources_match_pinned_hashes) ... ok
+test_checksum_failure_does_not_install_engine (__main__.ContentTests.test_checksum_failure_does_not_install_engine) ... ok
+test_map_routes_and_salvage_are_reachable (__main__.ContentTests.test_map_routes_and_salvage_are_reachable) ... ok
+test_png_sheet_regions_and_chrome_dimensions (__main__.ContentTests.test_png_sheet_regions_and_chrome_dimensions) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.023s
+
+OK
+Testing mod: Frontier Collective
+Testing default sequences for FRONTIER
+Testing Fluent references
+Testing map: Salt Basin
+Testing map: Frontier menu
+PASS: decoded all sequence frames for FRONTIER.
+
+Runtime assertion:
+PASS: 40 desktop snapshots through tick 4959; bases, harvesting, movement, production, combat and decisive outcome.
+PASS: 36 generated content files reproduced byte-for-byte.
+PASS: pinned engine downloaded freshly and hash verified.
+Debug style build: passed with one visible upstream NU1901 warning, zero errors.
+Stock make check: fails on upstream NU1901 elevated to an error.

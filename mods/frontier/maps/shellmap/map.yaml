@@ -1,0 +1,20 @@
+MapFormat: 12
+RequiresMod: frontier
+Title: Frontier menu
+Author: Frontier Collective contributors
+Tileset: FRONTIER
+MapSize: 66,66
+Bounds: 1,1,64,64
+Visibility: Shellmap
+Categories: Shellmap
+Players:
+	PlayerReference@Neutral:
+		Name: Neutral
+		OwnsWorld: True
+		NonCombatant: True
+		Faction: collective
+Actors:
+Rules:
+	world:
+		-SpawnStartingUnits:
+		-StartingUnits@outpost:

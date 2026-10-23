@@ -1,0 +1,49 @@
+Pulse:
+	ReloadDelay: 15
+	Range: 4c0
+	ValidTargets: Ground
+	Projectile: Bullet
+		Speed: 900
+		ContrailLength: 3
+		ContrailStartColor: 8BFFFF
+		ContrailStartWidth: 35
+	Warhead@damage: SpreadDamage
+		Spread: 128
+		Damage: 1200
+		ValidTargets: Ground
+		Falloff: 100, 0
+		Range: 0, 512
+
+Cannon:
+	ReloadDelay: 45
+	Range: 6c0
+	ValidTargets: Ground
+	Projectile: Bullet
+		Speed: 600
+		ContrailLength: 4
+		ContrailStartColor: FFD189
+		ContrailStartWidth: 60
+	Warhead@damage: SpreadDamage
+		Spread: 256
+		Damage: 5500
+		ValidTargets: Ground
+		Falloff: 100, 25, 0
+		Range: 0, 512, 1c0
+
+Mortar:
+	ReloadDelay: 90
+	Range: 10c0
+	MinRange: 2c0
+	ValidTargets: Ground
+	Projectile: Bullet
+		Speed: 240
+		LaunchAngle: 90
+		ContrailLength: 8
+		ContrailStartColor: FFEBC2
+		ContrailStartWidth: 55
+	Warhead@damage: SpreadDamage
+		Spread: 512
+		Damage: 8000
+		ValidTargets: Ground
+		Falloff: 100, 50, 0
+		Range: 0, 1c0, 2c0

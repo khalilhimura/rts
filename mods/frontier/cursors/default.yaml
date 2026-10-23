@@ -1,0 +1,52 @@
+Cursors:
+	cursors/assets/default.png:
+		default:
+			Start: 0
+		move:
+			Start: 0
+		move-blocked:
+			Start: 0
+		attack:
+			Start: 0
+		attack-blocked:
+			Start: 0
+		attackmove:
+			Start: 0
+		attackmove-blocked:
+			Start: 0
+		force-move:
+			Start: 0
+		force-move-blocked:
+			Start: 0
+		harvest:
+			Start: 0
+		harvest-blocked:
+			Start: 0
+		enter:
+			Start: 0
+		enter-blocked:
+			Start: 0
+		deploy:
+			Start: 0
+		deploy-blocked:
+			Start: 0
+		select:
+			Start: 0
+		rallypoint:
+			Start: 0
+		ability:
+			Start: 0
+		ability-blocked:
+			Start: 0
+		generic-blocked:
+			Start: 0
+		guard:
+			Start: 0
+		guard-blocked:
+			Start: 0
+		assaultmove:
+			Start: 0
+		assaultmove-blocked:
+			Start: 0
+		attackoutsiderange:
+			Start: 0

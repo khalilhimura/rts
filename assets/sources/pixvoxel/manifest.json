@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/tommyettinger/PixVoxelAssets",
+  "commit": "99dd229ab1cb39101fc0dda554883fc0dfe1be8b",
+  "upstream_directory": "PixVoxelAssets/PixVoxelAssets/CU2",
+  "license": "CC0-1.0",
+  "files": {
+    "Artillery_S_Large_W.vox": "9262cc7306d722aeaf72b797a7b57fe68072d664c77d4ff490205cbab9f4989c",
+    "Tank_Large_W.vox": "e9d47822efcb1a5a3b65e835a5ac71e1aa94ec8ccc6adab7549382625568ed69",
+    "Tank_S_Large_W.vox": "e583d149319bd4937cbb58cc29d685e1f0ffe0dc5e81c71a4402a328d48c7284",
+    "Truck_Large_W.vox": "33f3af3e78f6a33fe15d1954510690e05a7aef316a7d81780f235c99a61d42c7"
+  }
+}

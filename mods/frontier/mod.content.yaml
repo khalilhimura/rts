@@ -1,0 +1,19 @@
+Cursors:
+	frontier|cursors/default.yaml
+Rules:
+	frontier|rules/mpspawn.yaml
+	frontier|rules/palettes.yaml
+	frontier|rules/player.yaml
+	frontier|rules/world.yaml
+	frontier|rules/actors.yaml
+	frontier|rules/ai.yaml
+Sequences:
+	frontier|sequences/mapeditor.yaml
+	frontier|sequences/mpspawn.yaml
+	frontier|sequences/frontier.yaml
+TileSets:
+	frontier|tilesets/frontier.yaml
+Weapons:
+	frontier|weapons/frontier.yaml
+Notifications:
+	frontier|notifications/ui.yaml

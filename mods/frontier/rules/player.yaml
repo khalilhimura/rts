@@ -1,0 +1,34 @@
+^baseplayer:
+	AlwaysVisible:
+	Shroud:
+		ExploredMapCheckboxEnabled: true
+		FogCheckboxEnabled: false
+		FogCheckboxLocked: true
+	PlayerResources:
+		DefaultCash: 6000
+		ResourceValues:
+			Salvage: 40
+
+player:
+	Inherits: ^baseplayer
+	DeveloperMode:
+	TechTree:
+	PowerManager:
+	ClassicProductionQueue@Building:
+		Type: Building
+		LowPowerModifier: 200
+	ClassicProductionQueue@Vehicle:
+		Type: Vehicle
+		DisplayOrder: 1
+		LowPowerModifier: 200
+	PlaceBuilding:
+	MissionObjectives:
+	ConquestVictoryConditions:
+		Objective: Destroy the opposing outpost.
+	PlayerStatistics:
+	PlayerRadarTerrain:
+	FrozenActorLayer:
+	EnemyWatcher:
+
+editorplayer:
+	Inherits: ^baseplayer

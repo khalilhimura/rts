@@ -1,0 +1,40 @@
+General:
+	Name: Salt Frontier
+	Id: FRONTIER
+	EditorTemplateOrder: Terrain
+	Palette:
+Terrain:
+	TerrainType@Clear:
+		Type: Clear
+		Color: 555D59
+	TerrainType@Road:
+		Type: Road
+		Color: 737773
+	TerrainType@Rock:
+		Type: Rock
+		Color: 303B40
+	TerrainType@Salvage:
+		Type: Salvage
+		Color: 52D7D3
+Templates:
+	Template@0:
+		Id: 0
+		Images: tilesets/frontier/ground.png
+		Size: 1,1
+		Categories: Terrain
+		Tiles:
+			0: Clear
+	Template@1:
+		Id: 1
+		Images: tilesets/frontier/road.png
+		Size: 1,1
+		Categories: Terrain
+		Tiles:
+			0: Road
+	Template@2:
+		Id: 2
+		Images: tilesets/frontier/rock.png
+		Size: 1,1
+		Categories: Terrain
+		Tiles:
+			0: Rock

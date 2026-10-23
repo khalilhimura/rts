@@ -1,0 +1,78 @@
+scout:
+	idle:
+		Filename: sequences/assets/scout.png
+		Facings: 8
+	icon:
+		Filename: sequences/assets/scout-icon.png
+
+tank:
+	idle:
+		Filename: sequences/assets/tank.png
+		Facings: 8
+	icon:
+		Filename: sequences/assets/tank-icon.png
+
+artillery:
+	idle:
+		Filename: sequences/assets/artillery.png
+		Facings: 8
+	icon:
+		Filename: sequences/assets/artillery-icon.png
+
+harvester:
+	idle:
+		Filename: sequences/assets/harvester.png
+		Facings: 8
+	icon:
+		Filename: sequences/assets/harvester-icon.png
+
+hub:
+	idle:
+		Filename: sequences/assets/hub.png
+	icon:
+		Filename: sequences/assets/hub-icon.png
+
+generator:
+	idle:
+		Filename: sequences/assets/generator.png
+	icon:
+		Filename: sequences/assets/generator-icon.png
+
+refinery:
+	idle:
+		Filename: sequences/assets/refinery.png
+	icon:
+		Filename: sequences/assets/refinery-icon.png
+
+fabricator:
+	idle:
+		Filename: sequences/assets/fabricator.png
+	icon:
+		Filename: sequences/assets/fabricator-icon.png
+
+resources:
+	salvage:
+		Filename: sequences/assets/salvage.png
+		Length: 20
+
+overlay:
+	build-valid:
+		Filename: sequences/assets/build-valid.png
+		Start: 0
+	build-invalid:
+		Filename: sequences/assets/build-invalid.png
+		Start: 0
+	build-unknown:
+		Filename: sequences/assets/build-unknown.png
+		Start: 0
+
+clock:
+	idle:
+		Filename: sequences/assets/clock.png
+		Length: 32
+
+rallypoint:
+	flag:
+		Filename: sequences/assets/rallypoint.png
+	circles:
+		Filename: sequences/assets/rallypoint.png

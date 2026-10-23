@@ -1,0 +1,134 @@
+Container@PLAYER_WIDGETS:
+	Logic: MenuButtonsChromeLogic, LoadIngameChatLogic
+	Children:
+		LogicTicker@SIDEBAR_TICKER:
+		Container@CHAT_ROOT:
+		LogicKeyListener@PLAYER_KEYHANDLER:
+		ControlGroups@CONTROLGROUPS:
+			SelectGroupKeyPrefix: ControlGroupSelect
+			CreateGroupKeyPrefix: ControlGroupCreate
+			AddToGroupKeyPrefix: ControlGroupAddTo
+			CombineWithGroupKeyPrefix: ControlGroupCombineWith
+			JumpToGroupKeyPrefix: ControlGroupJumpTo
+		Background@SIDEBAR:
+			X: WINDOW_WIDTH - 250
+			Width: 250
+			Height: WINDOW_HEIGHT
+			Background: dialog
+			Children:
+				Label@TITLE:
+					X: 16
+					Y: 14
+					Width: 220
+					Height: 28
+					Font: Bold
+					Text: hud-title
+				MenuButton@OPTIONS_BUTTON:
+					X: 16
+					Y: 50
+					Width: 218
+					Height: 28
+					Key: escape
+					Text: button-observer-widgets-options
+				Container@CASH_CONTAINER:
+					Logic: IngameCashCounterLogic
+					X: 16
+					Y: 90
+					Children:
+						LabelWithTooltip@CASH:
+							Width: 112
+							Height: 30
+							Font: MediumBold
+							TooltipContainer: TOOLTIP_CONTAINER
+				Container@POWER_CONTAINER:
+					Logic: IngamePowerCounterLogic
+					X: 144
+					Y: 90
+					Children:
+						Image@POWER_ICON:
+							Y: 7
+							Width: 16
+							Height: 16
+							ImageCollection: power-icons
+						LabelWithTooltip@POWER:
+							X: 22
+							Width: 72
+							Height: 30
+							Font: Bold
+							TooltipContainer: TOOLTIP_CONTAINER
+				Radar@INGAME_RADAR:
+					X: 16
+					Y: 132
+					Width: 218
+					Height: 164
+					WorldInteractionController: INTERACTION_CONTROLLER
+				Container@SIDEBAR_PRODUCTION:
+					Logic: ClassicProductionLogic
+					X: 16
+					Y: 314
+					Width: 218
+					Height: 250
+					Children:
+						LogicTicker@PRODUCTION_TICKER:
+						ProductionPalette@PRODUCTION_PALETTE:
+							Y: 42
+							Columns: 3
+							IconSize: 64, 48
+							IconMargin: 4, 4
+							ClockPalette: greyscale
+							NotBuildablePalette: greyscale
+							TooltipContainer: TOOLTIP_CONTAINER
+							TooltipTemplate: PRODUCTION_TOOLTIP
+							ReadyText: hud-ready
+							HoldText: hud-hold
+							MinimumRows: 2
+							MaximumRows: 2
+						Container@PRODUCTION_TYPES:
+							Children:
+								ProductionTypeButton@BUILDING:
+									Width: 105
+									Height: 30
+									Text: hud-build
+									ProductionGroup: Building
+									Children:
+										Image@ICON:
+											ImageCollection: production-icons
+											Visible: false
+								ProductionTypeButton@VEHICLE:
+									X: 113
+									Width: 105
+									Height: 30
+									Text: hud-units
+									ProductionGroup: Vehicle
+									Children:
+										Image@ICON:
+											ImageCollection: production-icons
+											Visible: false
+		Label@CONTROLS:
+			X: 12
+			Y: WINDOW_HEIGHT - 50
+			Width: 650
+			Height: 20
+			Text: hud-controls
+			Contrast: true
+		Label@OBJECTIVE:
+			X: 12
+			Y: WINDOW_HEIGHT - 28
+			Width: 650
+			Height: 20
+			Text: hud-objective
+			Contrast: true
+		Label@BUILD_HELP:
+			X: WINDOW_WIDTH - 234
+			Y: 540
+			Width: 218
+			Height: 24
+			Font: TinyBold
+			Text: hud-build-help
+		Label@HARVEST_HELP:
+			X: WINDOW_WIDTH - 234
+			Y: 566
+			Width: 218
+			Height: 24
+			Font: TinyBold
+			Text: hud-harvest-help

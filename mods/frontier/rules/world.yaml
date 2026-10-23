@@ -1,0 +1,86 @@
+^baseworld:
+	Inherits: ^palettes
+	ActorMap:
+	AlwaysVisible:
+	ControlGroups:
+	Faction@random:
+		InternalName: Random
+		Name: faction-random.name
+		RandomFactionMembers: collective
+		Description: faction-random.description
+	Faction@collective:
+		InternalName: collective
+		Name: faction-collective
+		Description: faction-collective-description
+	LoadWidgetAtGameStart:
+	MusicPlaylist:
+	ScreenMap:
+	Selection:
+	TerrainRenderer:
+	Locomotor@ground:
+		Name: ground
+		TerrainSpeeds:
+			Clear: 100
+			Road: 120
+			Salvage: 80
+	ResourceRenderer:
+		ResourceTypes:
+			Salvage:
+				Image: resources
+				Sequences: salvage
+				Palette: greyscale
+				Name: resource-salvage
+
+world:
+	Inherits: ^baseworld
+	ColorPickerManager:
+		PreviewActor: scout.colorpicker
+	CreateMapPlayers:
+	MapStartingLocations:
+	SpawnMapActors:
+	SpawnStartingUnits:
+		StartingUnitsClass: outpost
+	StartingUnits@outpost:
+		Class: outpost
+		ClassName: starting-outpost
+		BaseActor: hub
+		Factions: collective
+		SupportActors: scout, scout, tank
+		InnerSupportRadius: 4
+		OuterSupportRadius: 6
+	FrontierCamera:
+	FrontierDiagnostics:
+	PathFinder:
+	BuildingInfluence:
+	MapBuildRadius:
+	MapOptions:
+		ShortGameCheckboxEnabled: true
+		ShortGameCheckboxLocked: true
+	ResourceLayer:
+		ResourceTypes:
+			Salvage:
+				ResourceIndex: 1
+				TerrainType: Salvage
+				AllowedTerrainTypes: Clear
+				MaxDensity: 20
+	ResourceClaimLayer:
+	ProductionQueueFromSelection:
+		ProductionPaletteWidget: PRODUCTION_PALETTE
+	ChatCommands:
+	PlayerCommands:
+	HelpCommand:
+
+editorworld:
+	Inherits: ^baseworld
+	EditorActionManager:
+	EditorActorLayer:
+	EditorCursorLayer:
+	MarkerLayerOverlay:
+	TerrainGeometryOverlay:
+	EditorResourceLayer:
+		ResourceTypes:
+			Salvage:
+				ResourceIndex: 1
+				TerrainType: Salvage
+				AllowedTerrainTypes: Clear
+				MaxDensity: 20

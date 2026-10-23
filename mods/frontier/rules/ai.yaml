@@ -1,0 +1,45 @@
+player:
+	ModularBot@pioneer:
+		Name: bot-pioneer
+		Type: pioneer
+	GrantConditionOnBotOwner:
+		Condition: bot
+		Bots: pioneer
+	BaseBuilderBotModule:
+		RequiresCondition: bot
+		ConstructionYardTypes: hub
+		RefineryTypes: refinery
+		PowerTypes: generator
+		VehiclesFactoryTypes: fabricator
+		BarracksTypes: fabricator
+		ProductionTypes: fabricator
+		SiloTypes: refinery
+		MinimumExcessPower: 20
+		MaximumExcessPower: 100
+		AdditionalMinimumRefineryCount: 0
+		BuildingFractions:
+			generator: 35
+			refinery: 35
+			fabricator: 30
+		BuildingLimits:
+			generator: 3
+			refinery: 2
+			fabricator: 2
+	UnitBuilderBotModule:
+		RequiresCondition: bot
+		UnitsToBuild:
+			scout: 35
+			tank: 45
+			artillery: 20
+	SquadManagerBotModule:
+		RequiresCondition: bot
+		ConstructionYardTypes: hub
+		ProtectionTypes: hub, refinery, fabricator
+		ExcludeFromSquadsTypes: harvester
+		SquadSize: 4
+		SquadSizeRandomBonus: 2
+		RushInterval: 1500
+	HarvesterBotModule:
+		RequiresCondition: bot
+		HarvesterTypes: harvester
+		RefineryTypes: refinery

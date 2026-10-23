@@ -1,0 +1,27 @@
+^palettes:
+	PaletteFromGrayscale@greyscale:
+		Name: greyscale
+	PlayerColorPalette@player:
+		BasePalette: greyscale
+	PlayerColorShift:
+		MinHue: 0.29
+		MaxHue: 0.37
+		ReferenceHue: 0.33
+		ReferenceSaturation: 0.925
+		ReferenceValue: 0.95
+		BasePalette: player
+	ColorPickerPalette@colorpicker:
+		Name: colorpicker
+		BasePalette: greyscale
+		AllowModifiers: false
+	ColorPickerColorShift:
+		MinHue: 0.29
+		MaxHue: 0.37
+		ReferenceHue: 0.33
+		ReferenceSaturation: 0.925
+		ReferenceValue: 0.95
+		BasePalette: colorpicker
+	PaletteFromGrayscale@chrome:
+		Name: chrome
+	PaletteFromGrayscale@effect:
+		Name: effect

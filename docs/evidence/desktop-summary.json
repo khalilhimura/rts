@@ -1,0 +1,35 @@
+{
+  "environment": "Debian 13; Xorg dummy :99; SDL2 / Mesa llvmpipe OpenGL 4.5; 1280x800",
+  "sdk": "8.0.426",
+  "runtime": "6.0.36",
+  "snapshots": 40,
+  "last_tick": 4959,
+  "final": [
+    {
+      "name": "Multi0",
+      "state": "Lost",
+      "cash": 8050,
+      "earned": 6400,
+      "spent": 4350,
+      "kills": 4
+    },
+    {
+      "name": "Multi1",
+      "state": "Won",
+      "cash": 11252,
+      "earned": 20000,
+      "spent": 14748,
+      "kills": 11
+    }
+  ],
+  "human_types_observed": [
+    "artillery",
+    "fabricator",
+    "generator",
+    "harvester",
+    "hub",
+    "refinery",
+    "scout",
+    "tank"
+  ]
+}
