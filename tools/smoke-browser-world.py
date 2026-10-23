@@ -188,7 +188,7 @@ try:
                 wait_until(lambda value:all(p['earned']>0 for p in value['latest']['players']),'both economies delivered salvage')
                 page.screenshot(path=str(evidence/'world-economy.png'),timeout=10000)
                 wait_until(lambda value:{p['state'] for p in value['latest']['players']}=={'Won','Lost'},
-                    'decisive AI combat outcome',timeout=1500,max_ticks=8000)
+                    'decisive AI combat outcome',timeout=2100,max_ticks=8000)
                 final=state()
                 final['build']=json.loads((out/'world-build.json').read_text())
                 players=[player for sample in final['history'] for player in sample['players']]

@@ -8,7 +8,7 @@ permissions:
 jobs:
   browser:
     runs-on: ubuntu-22.04
-    timeout-minutes: 45
+    timeout-minutes: 70
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +30,9 @@ jobs:
       - run: python3 tools/build-browser-probe.py --skip-engine-build
       - run: python3 tools/test-browser-probe.py
       - name: Actual browser skirmish and lifecycle acceptance under /rts/
-        timeout-minutes: 35
+        # The software runner measured ~2.3 simulation ticks/second. Retain
+        # the driver's tick/stall limits and decisive-result assertions.
+        timeout-minutes: 60
         run: python3 tools/smoke-browser-world.py --full-gameplay
       - name: Upload browser evidence
         if: always()
