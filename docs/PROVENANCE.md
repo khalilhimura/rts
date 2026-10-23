@@ -9,6 +9,7 @@ Verified 2026-10-23. This repository is a modified OpenRA SDK project, not an EA
 | OpenRA Mod SDK | [20250330](https://github.com/OpenRA/OpenRAModSDK/tree/0059e22e0e3bfc862500aaaa9fe1aed4ea4e994a), commit `0059e22e0e3bfc862500aaaa9fe1aed4ea4e994a` | GPLv3; `COPYING`, original file headers, `docs/SDK-README.upstream.md` |
 | OpenRA engine | [release-20250330](https://github.com/OpenRA/OpenRA/tree/524b6abdf1874b0132a7b06c1f89c7012f60124c), commit `524b6abdf1874b0132a7b06c1f89c7012f60124c` | GPL-3.0-or-later per source headers; fetched source retains `COPYING`, `AUTHORS`, dependency notices; `licenses/OpenRA-AUTHORS.txt` preserves a copy |
 | SDK UI | SDK `mods/example/chrome/assets/dialog.png`, `glyphs.png`; cursor `default.png`; editor markers `mapeditor.png`, `mpspawn.png` and corresponding YAML | Retained from the above GPL SDK baseline; original chrome definitions adapted. The example logo was replaced by an original mark. |
+| SDK packaging artwork | Same pinned SDK, `packaging/artwork/*.png` | Retained unchanged under the SDK baseline license; placeholder installer icons/backgrounds are not used by the desktop prototype; packaging remains unvalidated |
 | Common UI and fonts | Pinned engine `mods/common`, including GNU FreeFont `FreeSans.ttf` / `FreeSansBold.ttf` | GPL according to engine `AUTHORS`; fetched with source, not duplicated or relicensed as CC0 |
 
 Engine archive: `https://github.com/OpenRA/OpenRA/archive/524b6abdf1874b0132a7b06c1f89c7012f60124c.zip`
