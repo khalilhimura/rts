@@ -32,13 +32,25 @@ def player(state):
     return next(p for p in state['players'] if p['name'] == 'Multi0')
 
 
-def wait_until(process, condition, label, timeout=120):
+def wait_until(process, condition, label, timeout=300, max_ticks=2000):
     deadline = time.monotonic()+timeout
+    first_tick = last_tick = None
+    progressed_at = time.monotonic()
     while time.monotonic() < deadline:
         states = snapshots()
         if states and condition(states):
-            print('PASS: '+label, flush=True)
+            print(f"PASS: {label} (tick {states[-1]['tick']})", flush=True)
             return states[-1]
+        if states:
+            tick = states[-1]['tick']
+            if first_tick is None:
+                first_tick = tick
+            if tick != last_tick:
+                last_tick, progressed_at = tick, time.monotonic()
+            if tick-first_tick > max_ticks:
+                raise RuntimeError(f'Simulation exceeded {max_ticks} ticks waiting for {label}')
+        if time.monotonic()-progressed_at > 90:
+            raise RuntimeError(f'Simulation stalled waiting for {label}')
         if process.poll() is not None:
             raise RuntimeError(f'Client exited before {label}; see {LOG}')
         time.sleep(.2)
@@ -80,7 +92,7 @@ def main():
                                    env=env, stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
         try:
             initial = wait_until(process, lambda states: len(states[-1]['players']) == 2,
-                                 'two-player desktop skirmish started')
+                                 'two-player desktop skirmish started', timeout=120)
             human = player(initial)
             hub = next(a for a in human['actors'] if a['type'] == 'hub')
             hx, hy = hub['x'], hub['y']
@@ -131,7 +143,7 @@ def main():
                        'both economies delivered salvage')
             ImageGrab.grab(xdisplay=os.environ['DISPLAY']).save(RUNTIME/'ci-desktop-smoke.png')
             wait_until(process, lambda states: {p['state'] for p in states[-1]['players']} == {'Won','Lost'},
-                       'combat ended with a decisive outcome', timeout=420)
+                       'combat ended with a decisive outcome', timeout=1200, max_ticks=8000)
             subprocess.run(['python3', 'tools/check-runtime-log.py', str(LOG), '--require-victory'], cwd=ROOT, check=True)
         except Exception:
             states = snapshots()

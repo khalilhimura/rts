@@ -18,6 +18,8 @@ The engine still targets retired .NET 6, producing NETSDK1138 warnings in its Re
 
 Hosted run [39930294262](https://github.com/khalilhimura/rts/actions/runs/39930294262) confirmed the pinned SDK, build, strict style, content and dependency checks passed, but exposed unreliable fixed wall-clock waits in the new desktop driver. The driver now waits for the real production queue's ready state, reported by read-only diagnostics once per 25 simulation ticks. Software rendering uses two Mesa worker threads, disables VSync and caps rendering to the game frame rate; simulation rules and game speed are unchanged. Failures retain a screenshot and print the last observed state for diagnosis.
 
+Run [39931489402](https://github.com/khalilhimura/rts/actions/runs/39931489402) passed all those input/production/economy assertions and recorded combat kills and structure damage, but reached only tick 4450 before the 420-second combat wait expired. The hosted virtual display advanced about 6–7 simulation ticks per wall-clock second. CI now rebuilds Release after the strict Debug check, which shares `engine/bin` with the playable build. Waits enforce simulation-tick budgets and fail after 90 seconds without simulation progress; the decisive-result assertion remains required, with a larger wall-clock ceiling for software displays. This does not change the game's simulation rate or balance.
+
 Browser delivery is assessed separately in [BROWSER.md](BROWSER.md): no browser deployment has been made.
 
 ## Original milestone checks (historical, before CI repair)

@@ -25,8 +25,12 @@ jobs:
       - run: ./tools/check.sh
       - run: make check
       - run: python3 tools/check-dependencies.py
+      # make check writes Debug DLLs into the shared engine/bin directory.
+      # Exercise the Release build that developers launch after `make`.
+      - name: Restore Release gameplay binaries
+        run: make
       - name: Desktop gameplay smoke
-        timeout-minutes: 12
+        timeout-minutes: 25
         run: xvfb-run -a -s "-screen 0 1280x800x24" python3 tools/smoke-desktop.py
       - name: Upload desktop evidence
         if: always()
