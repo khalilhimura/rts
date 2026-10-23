@@ -6,6 +6,7 @@ check: build
 	python3 tools/check-browser-style.py
 	python3 tools/check-browser-dependencies.py
 test: check
+	python3 tools/test-browser-compositor.py
 	python3 tools/test-browser-responsiveness.py
 	python3 tools/smoke-browser-world.py --full-gameplay
 serve: build

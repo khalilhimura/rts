@@ -34,12 +34,23 @@ A later exact-commit local run failed the new submission threshold at 337.1 ms, 
 
 This follows the browser guidance on avoiding [blocking WebGL queries](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices) and the documented [zero-timeout sync query](https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext/clientWaitSync). The existing rendering pipeline, shaders and original game content are preserved.
 
+## Framebuffer compositor follow-up
+
+The 1086b98 hosted run retained a real failure after warmup: 437.5 ms submission p95 / 898.3 ms completion p95, at 25.05 simulation ticks/sec. The remaining bottleneck was rendering, rather than tick scheduling or JS/.NET input dispatch.
+
+The follow-up keeps both framebuffer copies and the existing world/UI rendering paths, but gives the copies a small RGBA-only shader. Their general sprite program had palette/channel selection, color shift and fragment-depth paths that copies do not use. Projection, channel swaps, alpha discard/blending, tint and pixel-art sampling retain the original calculations. Exactly 1:1 copies skip the identity pixel-art filter; scaled copies retain it. No framebuffer size, resolution, asset, game speed or gameplay threshold is reduced.
+
+`test-browser-compositor.py` renders both actual programs, then compares every RGBA byte: 200 combinations, 33,228,416 bytes, including 1280x800 output from a 2048x1024 target. Both channel orders, alpha/blending, positive/replacement tint, up/downscaling and Y flips are covered. Local output was exactly equal. The same equivalence check is required in CI.
+
+The first comparable local compositor sample increased game rendering from roughly 4.8 to 8 frames/sec. The subsequent real-input run measured 25.13 ticks/sec, 71.60 ms median / 98.60 ms p95 warmed submission and 197.60 ms p95 GPU completion. First selections were 161.90 / 95.10 ms to submission, 217.30 / 202.00 ms to completion. These are development samples; final exact-head CI and full-match results are still required, and actual Brave-on-Mac verification remains outstanding.
+
 ## Reproduce
 
 Build with the pinned SDK/workload in `browser/README.md`, then run:
 
 ```sh
 python3 tools/profile-browser.py --browser-path /path/to/chromium --label current
+python3 tools/test-browser-compositor.py --browser-path /path/to/chromium
 python3 tools/test-browser-responsiveness.py --browser-path /path/to/chromium
 python3 tools/smoke-browser-world.py --browser-path /path/to/chromium --full-gameplay
 ```

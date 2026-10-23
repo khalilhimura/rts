@@ -52,6 +52,7 @@ python3 tools/check-browser-style.py
 python3 tools/check-browser-dependencies.py
 python3 tools/build-browser-probe.py --skip-engine-build
 python3 tools/test-browser-probe.py
+python3 tools/test-browser-compositor.py
 python3 tools/test-browser-responsiveness.py
 python3 tools/smoke-browser-world.py --full-gameplay
 python3 tools/package-browser.py
