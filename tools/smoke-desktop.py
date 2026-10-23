@@ -76,6 +76,9 @@ class Mouse:
 
     def click(self, x, y, button=1):
         self.move(x, y)
+        # Placement reads Viewport.LastMousePos, which SDL updates while pumping
+        # motion. Let a software-rendered frame observe motion before the click.
+        time.sleep(.3)
         self.t.XTestFakeButtonEvent(self.display, button, 1, 0)
         self.t.XTestFakeButtonEvent(self.display, button, 0, 0)
         self.x.XFlush(self.display)
@@ -116,7 +119,21 @@ def main():
                 # rather than guessing how many simulation ticks have elapsed.
                 wait_until(process, lambda states: any(i['name'] == name and i['ready']
                            for q in player(states[-1])['queues'] for i in q['items']), name+' production ready')
-                for dx, dy in candidates:
+                # Starting support units are randomly positioned. Observe occupied
+                # cells and keep bounded alternatives instead of assuming three
+                # fixed locations are always free. All Frontier buildings are 2x2.
+                fallback = [(0,-4), (4,0), (0,4), (-4,0), (-4,-4), (4,-4),
+                            (-4,4), (4,4), (0,-5), (5,0), (0,5), (-5,0)]
+                for dx, dy in dict.fromkeys(candidates+fallback):
+                    occupied = set()
+                    for p in snapshots()[-1]['players']:
+                        for actor in p['actors']:
+                            size = 2 if actor['type'] in {'hub','generator','refinery','fabricator'} else 1
+                            occupied.update((actor['x']+x, actor['y']+y) for x in range(size) for y in range(size))
+                    # Include a margin for the preview's center-to-top-left offset.
+                    footprint = {(hx+dx+x, hy+dy+y) for x in (-1,0,1) for y in (-1,0,1)}
+                    if footprint & occupied:
+                        continue
                     mouse.click(icon_x, 378)  # Pick up the completed structure.
                     mouse.click(*screen(hx+dx, hy+dy))
                     mouse.move(900, 420)
