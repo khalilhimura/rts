@@ -25,7 +25,7 @@
 		{
 			"id": "modId",
 			"description": "ID of the mod to run",
-			"default": "all",
+			"default": "frontier",
 			"type": "promptString"
 		}, {
 			"id": "command",

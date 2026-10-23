@@ -53,4 +53,4 @@ On a cloud runner without a display, build/rules/sprite/content checks remain av
 
 ## Review/publishing
 
-The repository remote had no branch refs when inspected. `gh auth status` reported the environment's `GH_TOKEN` invalid. A draft PR cannot be opened with the current credentials or without a base branch. No credentials were generated, and no merge, installer release or public deployment was attempted. The implementation and evidence are committed locally for review; publishing status and commit are in the task's final report.
+The repository remote had no branch refs before this work. The implementation and evidence were committed and successfully pushed using the environment's Git connection to [feat/first-playable-skirmish](https://github.com/khalilhimura/rts/tree/feat/first-playable-skirmish). GitHub CLI separately reported its `GH_TOKEN` invalid, but that did not prevent the Git push. No credentials were generated. There is no separate existing base branch against which to open a draft PR, so no PR was created. No base branch was invented, and no merge, installer release or public deployment was performed.

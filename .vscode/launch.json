@@ -2,7 +2,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch (Example)",
+			"name": "Launch (Frontier Collective)",
 			"type": "coreclr",
 			"request": "launch",
 			"program": "${workspaceRoot}/engine/bin/OpenRA.dll",
