@@ -21,9 +21,9 @@ namespace OpenRA.Platforms.Default
 		TextureScaleFilter scaleFilter;
 
 		public uint ID => texture;
+		public bool IsDisposed { get; private set; }
 		public Size Size { get; private set; }
 
-		bool disposed;
 
 		public TextureScaleFilter ScaleFilter
 		{
@@ -206,9 +206,9 @@ namespace OpenRA.Platforms.Default
 
 		public void Dispose()
 		{
-			if (disposed)
+			if (IsDisposed)
 				return;
-			disposed = true;
+			IsDisposed = true;
 			OpenGL.glDeleteTextures(1, ref texture);
 		}
 	}

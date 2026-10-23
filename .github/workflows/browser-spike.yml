@@ -29,6 +29,10 @@ jobs:
       - run: python3 tools/check-browser-dependencies.py
       - run: python3 tools/build-browser-probe.py --skip-engine-build
       - run: python3 tools/test-browser-probe.py
+      - name: Exact framebuffer compositor pixel equivalence
+        run: python3 tools/test-browser-compositor.py
+      - name: Browser cursor, input latency and simulation responsiveness
+        run: python3 tools/test-browser-responsiveness.py
       - name: Actual browser skirmish and lifecycle acceptance under /rts/
         # The software runner measured ~2.3 simulation ticks/second. Retain
         # the driver's tick/stall limits and decisive-result assertions.
@@ -43,6 +47,8 @@ jobs:
             .runtime/browser-world-evidence
             .runtime/browser-world/world-build.json
             .runtime/browser-evidence
+            .runtime/browser-responsiveness
+            .runtime/browser-compositor-evidence
           if-no-files-found: warn
       - name: Package subpath deployment artifact
         run: python3 tools/package-browser.py

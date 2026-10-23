@@ -760,8 +760,15 @@ namespace OpenRA.Platforms.Default
 				Log.Write("graphics", glGetStringi(GL_EXTENSIONS, (uint)i));
 		}
 
-		public static void CheckGLError()
+		// WebGL getError synchronizes with the GPU process. Accumulate errors
+		// during a frame and drain them at Present instead of after every call.
+		public static bool DeferErrorChecks { get; set; }
+
+		public static void CheckGLError(bool force = false)
 		{
+			if (DeferErrorChecks && !force)
+				return;
+
 			// Let the debug message handler log the errors instead.
 			if ((Features & GLFeatures.DebugMessagesCallback) == GLFeatures.DebugMessagesCallback)
 				return;

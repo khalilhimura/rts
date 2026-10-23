@@ -1,0 +1,68 @@
+--- a/OpenRA.Game/Renderer.cs
++++ b/OpenRA.Game/Renderer.cs
+@@ -80,6 +80,9 @@
+ 		Rectangle lastWorldViewport = Rectangle.Empty;
+ 		ITexture currentPaletteTexture;
+ 		int currentPaletteHeight = 0;
++		readonly SpriteRenderer compositor;
++		readonly RgbaSpriteRenderer compositorRgba;
++		readonly IShader compositorShader;
+ 		IBatchRenderer currentBatchRenderer;
+ 		RenderType renderType = RenderType.None;
+ 
+@@ -106,6 +109,18 @@
+ 			SpriteRenderer = new SpriteRenderer(this, Context.CreateShader(combinedBindings));
+ 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
+ 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
++
++			if (System.OperatingSystem.IsBrowser())
++			{
++				compositorShader = Context.CreateShader(new FrameBufferShaderBindings());
++				compositor = new SpriteRenderer(this, compositorShader);
++				compositorRgba = new RgbaSpriteRenderer(compositor);
++			}
++			else
++			{
++				compositor = SpriteRenderer;
++				compositorRgba = RgbaSpriteRenderer;
++			}
+ 
+ 			tempVertexBuffer = Context.CreateVertexBuffer<Vertex>(TempVertexBufferSize);
+ 			quadIndexBuffer = Context.CreateIndexBuffer(Util.CreateQuadIndices(TempIndexBufferSize / 6));
+@@ -200,6 +215,13 @@
+ 			if (lastBufferSize != bufferSize)
+ 			{
+ 				SpriteRenderer.SetViewportParams(bufferSize, 1, 0f, int2.Zero);
++				if (compositorShader != null)
++				{
++					compositorShader.SetVec("Scroll", 0f, 0f, 0f);
++					compositorShader.SetVec("p1", 2f / bufferSize.Width, 2f / bufferSize.Height, 0f);
++					compositorShader.SetVec("p2", -1f, -1f, 0f);
++				}
++
+ 				lastBufferSize = bufferSize;
+ 			}
+ 		}
+@@ -294,10 +316,10 @@
+ 					(int)(-screenSprite.Bounds.Height / scale) / worldSprite.Size.Y,
+ 					1f);
+ 
+-				SpriteRenderer.EnablePixelArtScaling(true);
+-				RgbaSpriteRenderer.DrawSprite(worldSprite, float3.Zero, bufferScale);
++				compositor.EnablePixelArtScaling(bufferScale.X != 1f || bufferScale.Y != 1f);
++				compositorRgba.DrawSprite(worldSprite, float3.Zero, bufferScale);
+ 				Flush();
+-				SpriteRenderer.EnablePixelArtScaling(false);
++				compositor.EnablePixelArtScaling(false);
+ 			}
+ 			else
+ 			{
+@@ -340,7 +362,7 @@
+ 			// Render the compositor buffers to the screen
+ 			// HACK / PERF: Fudge the coordinates to cover the actual window while keeping the buffer viewport parameters
+ 			// This saves us two redundant (and expensive) SetViewportParams each frame
+-			RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0),
++			compositorRgba.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0),
+ 				new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
+ 			Flush();
+ 

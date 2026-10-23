@@ -35,7 +35,7 @@ namespace Frontier.Web
 				Directory.CreateDirectory("/openra/support");
 				Game.InitializeBrowser(new[] { "Engine.EngineDir=/openra/engine", "Engine.SupportDir=/openra/support",
 					"Game.Mod=frontier", "Game.Platform=Web", "Graphics.Mode=Windowed", "Graphics.WindowedSize=1280,800",
-					"Graphics.GLProfile=Embedded", "Graphics.DisableHardwareCursors=true", "Graphics.VSync=false",
+					"Graphics.GLProfile=Embedded", "Graphics.DisableHardwareCursors=false", "Graphics.VSync=false",
 					"Graphics.CapFramerateToGameFps=true" });
 				return "OK";
 			}
@@ -49,11 +49,17 @@ namespace Frontier.Web
 		}
 
 		[JSExport]
-		public static bool Step()
+		public static int Step(bool renderReady)
 		{
-			try { Game.BrowserLoopStep(); return Game.BrowserRestartRequested; }
+			try { Game.BrowserLoopStep(renderReady); return Game.BrowserRestartRequested ? -1 : Game.RenderFrame; }
 			catch (Exception error) { Console.Error.WriteLine(error.ToString()); throw; }
 		}
+
+		[JSExport]
+		public static void CheckGraphicsErrors() => WebPlatform.CheckCompletedFrame();
+
+		[JSExport]
+		public static int LogicDelay() => Game.BrowserLogicDelay;
 
 		[JSExport]
 		public static string State()
@@ -61,7 +67,20 @@ namespace Frontier.Web
 			var world = Game.BrowserWorld;
 			return JsonConvert.SerializeObject(new
 			{
+				performance = new
+				{
+					logicMilliseconds = Game.BrowserLogicMilliseconds,
+					renderMilliseconds = Game.BrowserRenderMilliseconds,
+					inputMilliseconds = Game.BrowserInputMilliseconds,
+					logicCount = Game.BrowserLogicCount,
+					renderCount = Game.BrowserRenderCount,
+					allocatedBytes = GC.GetAllocatedBytesForCurrentThread(),
+					dispatchedEvents = WebInput.DispatchedEvents,
+					maximumQueueMilliseconds = WebInput.MaximumQueueMilliseconds,
+					totalQueueMilliseconds = WebInput.TotalQueueMilliseconds
+				},
 				inputModifiers = (int)WebInput.CurrentModifiers,
+				inputFocus = WebInput.HasInputFocus,
 				menuOpen = Ui.Root.GetOrNull("INGAME_MENU") != null,
 				observerHud = Ui.Root.GetOrNull("OBSERVER_WIDGETS") != null,
 				buttons = VisibleWidgets(Ui.Root).OfType<ButtonWidget>()
@@ -115,5 +134,7 @@ namespace Frontier.Web
 		public static void Key(int type, string code, int modifiers, bool repeat) => WebInput.QueueKey(type, code, modifiers, repeat);
 		[JSExport]
 		public static void Text(string text) => WebInput.QueueText(text);
+		[JSExport]
+		public static void Focus(bool focused) => WebInput.Focus(focused);
 	}
 }

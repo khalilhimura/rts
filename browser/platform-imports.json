@@ -44,6 +44,11 @@
     "Use an automatic EffectiveWindowScale property to satisfy baseline style checks",
     "Release held browser keys/buttons on canvas focus loss",
     "Normalize inherited GLSL whitespace; shader logic is unchanged",
-    "Handle WebGL context-loss errors without querying invalid driver strings"
+    "Handle WebGL context-loss errors without querying invalid driver strings",
+    "Drain retained GL error validation after completed asynchronous browser frames instead of querying every GL call",
+    "Track owned texture disposal in managed state instead of synchronous per-bind glIsTexture queries",
+    "Implement browser-managed original cursor images/hotspots with BGRA conversion and CSS scaling",
+    "Dispatch DOM input before logic/render; release held input and canvas focus on leave/blur/cancel",
+    "Use a framebuffer-only compositor derived from combined shader projection/filter/channel-swap logic; retain original general sprite rendering and verify exact output against it"
   ]
 }

@@ -1,0 +1,178 @@
+{
+  "candidate": "uncommitted development sample; final exact-head CI required",
+  "referenceCommit": "1086b985212a8d59a44bda0a920c046de7dfff2c",
+  "sourceSha256": {
+    "browser/engine-patches/0010-browser-framebuffer-compositor.patch": "3b22ad850b47ebe7c29edefc6b178ae55852135662c9a257cb8951976b48bc88",
+    "browser/engine-additions/OpenRA.Game/Graphics/FrameBufferShaderBindings.cs": "1375304e2fd1a49651f1015e5d1e95922f0e2017a29ac72eefa8a03f94a89efd",
+    "browser/glsl/framebuffer.vert": "5069bd06b0d266c8630eb4d3c3b20f967f7210175f3b67859e6de7d0d376bbc3",
+    "browser/glsl/framebuffer.frag": "2ec61641bfca96660adb44e0ac5a367226a2599e957a63e749a98de232578776"
+  },
+  "pixelEquivalence": {
+    "status": "passed",
+    "cases": 200,
+    "comparedBytes": 33228416,
+    "exact": true,
+    "browser": "154.0.8037.57"
+  },
+  "input": {
+    "browser": "154.0.8037.57",
+    "renderer": "SwiftShader",
+    "inputMedianMs": 73.75,
+    "inputP95Ms": 110.29999999888241,
+    "completedFrameP95Ms": 205.19999999925494,
+    "ticksPerSecond": 25.032162838708032,
+    "samplesMs": [
+      {
+        "submittedMs": 95.59999999962747,
+        "completedMs": 205.09999999962747,
+        "width": 1280,
+        "warmup": false
+      },
+      {
+        "submittedMs": 61.40000000037253,
+        "completedMs": 154.90000000037253,
+        "width": 1280,
+        "warmup": false
+      },
+      {
+        "submittedMs": 110.29999999888241,
+        "completedMs": 201.59999999962747,
+        "width": 1280,
+        "warmup": false
+      },
+      {
+        "submittedMs": 96.80000000074506,
+        "completedMs": 205.19999999925494,
+        "width": 1280,
+        "warmup": false
+      },
+      {
+        "submittedMs": 86.09999999962747,
+        "completedMs": 186,
+        "width": 1280,
+        "warmup": false
+      },
+      {
+        "submittedMs": 26.699999999254942,
+        "completedMs": 118.09999999962747,
+        "width": 640,
+        "warmup": false
+      },
+      {
+        "submittedMs": 27.90000000037253,
+        "completedMs": 127.30000000074506,
+        "width": 640,
+        "warmup": false
+      },
+      {
+        "submittedMs": 43,
+        "completedMs": 137.69999999925494,
+        "width": 640,
+        "warmup": false
+      },
+      {
+        "submittedMs": 92.80000000074506,
+        "completedMs": 190,
+        "width": 640,
+        "warmup": false
+      },
+      {
+        "submittedMs": 10.199999999254942,
+        "completedMs": 107.09999999962747,
+        "width": 640,
+        "warmup": false
+      }
+    ],
+    "warmupSamplesMs": [
+      {
+        "submittedMs": 199.09999999962747,
+        "completedMs": 237,
+        "width": 1280,
+        "warmup": true
+      },
+      {
+        "submittedMs": 94.5,
+        "completedMs": 204.30000000074506,
+        "width": 640,
+        "warmup": true
+      }
+    ]
+  },
+  "firstSpecializedProfile": {
+    "browser": "154.0.8037.57",
+    "renderer": "headless SwiftShader",
+    "ticksPerSecond": 24.940023990403837,
+    "start": {
+      "time": 11176.10000000149,
+      "tick": 106,
+      "metrics": {
+        "elapsedMs": 5028.799999998882,
+        "ticksPerSecond": 21.078587336943915,
+        "callbacksPerSecond": 17.499204581613817,
+        "logicCallbacks": 103,
+        "meanStepMs": 6.534031413563805,
+        "maxStepMs": 724.9000000003725,
+        "renderFrames": 34,
+        "gpuBusyCallbacks": 54
+      },
+      "phase": {
+        "logicMilliseconds": 407.5999999999998,
+        "renderMilliseconds": 761.9,
+        "inputMilliseconds": 2.600000000000001,
+        "logicCount": 106,
+        "renderCount": 34,
+        "allocatedBytes": 69821680,
+        "dispatchedEvents": 0,
+        "maximumQueueMilliseconds": 0,
+        "totalQueueMilliseconds": 0
+      }
+    },
+    "end": {
+      "time": 31184.10000000149,
+      "tick": 605,
+      "metrics": {
+        "elapsedMs": 24994.799999998882,
+        "ticksPerSecond": 24.2050346472077,
+        "callbacksPerSecond": 20.44425240450105,
+        "logicCallbacks": 601,
+        "meanStepMs": 2.713309352529041,
+        "maxStepMs": 724.9000000003725,
+        "renderFrames": 199,
+        "gpuBusyCallbacks": 312
+      },
+      "phase": {
+        "logicMilliseconds": 1304.2000000000016,
+        "renderMilliseconds": 1460.6999999999991,
+        "inputMilliseconds": 9.99999999999998,
+        "logicCount": 605,
+        "renderCount": 199,
+        "allocatedBytes": 84467376,
+        "dispatchedEvents": 0,
+        "maximumQueueMilliseconds": 0,
+        "totalQueueMilliseconds": 0
+      }
+    },
+    "gl": {
+      "getError": {
+        "count": 165,
+        "ms": 89.800000006333
+      },
+      "getParameter": {
+        "count": 330,
+        "ms": 5.099999995902181
+      },
+      "flush": {
+        "count": 825,
+        "ms": 15.099999997764826
+      },
+      "drawElements": {
+        "count": 1485,
+        "ms": 1.299999998882413
+      },
+      "bufferSubData": {
+        "count": 1155,
+        "ms": 4.800000011920929
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+--- a/OpenRA.Game/Game.cs
++++ b/OpenRA.Game/Game.cs
+@@ -756,6 +756,14 @@
+ 			PerfHistory.Items["terrain_lighting"].Tick();
+ 		}
+ 
++		public static double BrowserLogicMilliseconds { get; private set; }
++		public static double BrowserRenderMilliseconds { get; private set; }
++		public static double BrowserInputMilliseconds { get; private set; }
++		public static long BrowserLogicCount { get; private set; }
++		public static long BrowserRenderCount { get; private set; }
++
++		public static int BrowserLogicDelay => (int)Math.Max(1, nextLogic - RunTime);
++
+ 		static long nextLogic, nextRender, forcedNextRender;
+ 		static bool renderBeforeNextTick;
+ 
+@@ -775,8 +783,14 @@
+ 			}
+ 		}
+ 
+-		public static int BrowserLoopStep()
+-		{
++		public static int BrowserLoopStep(bool renderReady = true)
++		{
++			// DOM events are dispatched before the logic/render that consumes them.
++			var inputStarted = Stopwatch.GetTimestamp();
++			if (System.OperatingSystem.IsBrowser() && OrderManager.World != null)
++				Renderer.Window.PumpInput(new DefaultInputHandler(OrderManager.World));
++			BrowserInputMilliseconds += Stopwatch.GetElapsedTime(inputStarted).TotalMilliseconds;
++
+ 			const int MaxLogicTicksBehind = 250;
+ 			const int MinReplayFps = 10;
+ 
+@@ -814,11 +828,18 @@
+ 			{
+ 				var forceRender = renderBeforeNextTick || now >= forcedNextRender;
+ 
+-				if (now >= nextLogic && !renderBeforeNextTick)
+-				{
++				// Catch up fixed simulation steps after a delayed RAF, bounded to
++				// the existing 250 ms jank window. No timestep or game-speed change.
++				var remainingLogicTicks = System.OperatingSystem.IsBrowser() ? 6 : 1;
++				while (now >= nextLogic && remainingLogicTicks > 0 && (!renderBeforeNextTick || System.OperatingSystem.IsBrowser()))
++				{
++					remainingLogicTicks--;
+ 					nextLogic += logicInterval;
+ 
++					var logicStarted = Stopwatch.GetTimestamp();
+ 					LogicTick();
++					BrowserLogicMilliseconds += Stopwatch.GetElapsedTime(logicStarted).TotalMilliseconds;
++					BrowserLogicCount++;
+ 
+ 					// Force at least one render per tick during regular gameplay
+ 					if (OrderManager.World != null && !OrderManager.World.IsLoadingGameSave && !OrderManager.World.IsReplay)
+@@ -827,7 +848,7 @@
+ 
+ 				var haveSomeTimeUntilNextLogic = now < nextLogic;
+ 				var isTimeToRender = now >= nextRender;
+-				if (!Renderer.WindowIsSuspended && ((isTimeToRender && haveSomeTimeUntilNextLogic) || forceRender))
++				if (renderReady && !Renderer.WindowIsSuspended && ((isTimeToRender && haveSomeTimeUntilNextLogic) || forceRender))
+ 				{
+ 					nextRender = now + renderInterval;
+ 
+@@ -839,7 +860,10 @@
+ 					var maxRenderInterval = Math.Max(1000 / MinReplayFps, renderInterval);
+ 					forcedNextRender = now + maxRenderInterval;
+ 
++					var renderStarted = Stopwatch.GetTimestamp();
+ 					RenderTick();
++					BrowserRenderMilliseconds += Stopwatch.GetElapsedTime(renderStarted).TotalMilliseconds;
++					BrowserRenderCount++;
+ 					renderBeforeNextTick = false;
+ 				}
+ 
+--- a/OpenRA.Game/Renderer.cs
++++ b/OpenRA.Game/Renderer.cs
+@@ -344,7 +344,8 @@
+ 				new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
+ 			Flush();
+ 
+-			Window.PumpInput(inputHandler);
++			if (!System.OperatingSystem.IsBrowser())
++				Window.PumpInput(inputHandler);
+ 			Context.Present();
+ 
+ 			renderType = RenderType.None;

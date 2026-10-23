@@ -16,10 +16,29 @@ function modifiersOf(e) {
 
 export function attachInput(canvas, bridge) {
 	const pressedKeys = new Set(), pressedButtons = new Set();
-	let lastPosition = [0, 0];
+	let lastPosition = [0, 0], pointerInside = false, lastFocus = false;
+	const metrics = {mouseCalls:0, mouseInteropMilliseconds:0, maxMouseInteropMilliseconds:0};
+	const sendMouse = (type, button, x, y, dx, dy, modifiers) => {
+		const started = performance.now();
+		bridge.Mouse(type, button, x, y, dx, dy, modifiers);
+		const elapsed = performance.now() - started;
+		metrics.mouseCalls++; metrics.mouseInteropMilliseconds += elapsed;
+		metrics.maxMouseInteropMilliseconds = Math.max(metrics.maxMouseInteropMilliseconds, elapsed);
+	};
+	const updateFocus = () => {
+		const focused = pointerInside && document.activeElement === canvas && document.hasFocus() && !document.hidden;
+		if (focused !== lastFocus) { bridge.Focus?.(focused); lastFocus = focused; }
+	};
+	canvas.addEventListener('pointerenter', () => { pointerInside = true; updateFocus(); });
+	canvas.addEventListener('pointerleave', () => { pointerInside = false; updateFocus(); });
+	canvas.addEventListener('focus', updateFocus);
+	window.addEventListener('focus', updateFocus);
+	document.addEventListener('visibilitychange', updateFocus);
 	const positionOf = e => {
 		// The canvas is laid out in CSS pixels but drawn at its backing size.
 		const rect = canvas.getBoundingClientRect();
+		pointerInside = e.clientX >= rect.left && e.clientX < rect.right && e.clientY >= rect.top && e.clientY < rect.bottom;
+		updateFocus();
 		return [
 			Math.round((e.clientX - rect.left) * (canvas.width / rect.width)),
 			Math.round((e.clientY - rect.top) * (canvas.height / rect.height)),
@@ -29,7 +48,7 @@ export function attachInput(canvas, bridge) {
 	canvas.addEventListener('pointerdown', e => {
 		const [x, y] = positionOf(e);
 		lastPosition = [x, y]; pressedButtons.add(e.button);
-		bridge.Mouse(MouseEventType.Down, BUTTON_FLAGS[e.button] ?? 0, x, y, 0, 0, modifiersOf(e));
+		sendMouse(MouseEventType.Down, BUTTON_FLAGS[e.button] ?? 0, x, y, 0, 0, modifiersOf(e));
 
 		// Capture keeps drag gestures alive when the pointer leaves the canvas, but
 		// it is not essential and throws for a pointer id that is no longer active,
@@ -43,7 +62,7 @@ export function attachInput(canvas, bridge) {
 	canvas.addEventListener('pointerup', e => {
 		const [x, y] = positionOf(e);
 		lastPosition = [x, y]; pressedButtons.delete(e.button);
-		bridge.Mouse(MouseEventType.Up, BUTTON_FLAGS[e.button] ?? 0, x, y, 0, 0, modifiersOf(e));
+		sendMouse(MouseEventType.Up, BUTTON_FLAGS[e.button] ?? 0, x, y, 0, 0, modifiersOf(e));
 		e.preventDefault();
 	});
 
@@ -55,13 +74,13 @@ export function attachInput(canvas, bridge) {
 		if (e.buttons & 1) held |= MouseButton.Left;
 		if (e.buttons & 2) held |= MouseButton.Right;
 		if (e.buttons & 4) held |= MouseButton.Middle;
-		bridge.Mouse(MouseEventType.Move, held, x, y, e.movementX | 0, e.movementY | 0, modifiersOf(e));
+		sendMouse(MouseEventType.Move, held, x, y, e.movementX | 0, e.movementY | 0, modifiersOf(e));
 	});
 
 	canvas.addEventListener('wheel', e => {
 		const [x, y] = positionOf(e);
 		// Engine scroll steps are discrete; the sign is what matters.
-		bridge.Mouse(MouseEventType.Scroll, 0, x, y, Math.sign(-e.deltaX), Math.sign(-e.deltaY), modifiersOf(e));
+		sendMouse(MouseEventType.Scroll, 0, x, y, Math.sign(-e.deltaX), Math.sign(-e.deltaY), modifiersOf(e));
 		e.preventDefault();
 	}, { passive: false });
 
@@ -89,10 +108,22 @@ export function attachInput(canvas, bridge) {
 	});
 	// Browsers can deliver key/pointer release to another element or window.
 	// Release held state when focus leaves the battlefield to avoid stuck orders.
-	canvas.addEventListener('blur', () => {
+	const releaseHeldInput = () => {
 		for (const code of pressedKeys) bridge.Key(KeyEventType.Up, code, 0, false);
 		for (const button of pressedButtons)
-			bridge.Mouse(MouseEventType.Up, BUTTON_FLAGS[button] ?? 0, ...lastPosition, 0, 0, 0);
+			sendMouse(MouseEventType.Up, BUTTON_FLAGS[button] ?? 0, ...lastPosition, 0, 0, 0);
 		pressedKeys.clear(); pressedButtons.clear();
-	});
+		updateFocus();
+	};
+	canvas.addEventListener('blur', releaseHeldInput);
+	window.addEventListener('blur', releaseHeldInput);
+	document.addEventListener('visibilitychange', () => { if (document.hidden) releaseHeldInput(); });
+	const releasePointer = () => {
+		for (const button of pressedButtons)
+			sendMouse(MouseEventType.Up, BUTTON_FLAGS[button] ?? 0, ...lastPosition, 0, 0, 0);
+		pressedButtons.clear();
+	};
+	canvas.addEventListener('pointercancel', releasePointer);
+	canvas.addEventListener('lostpointercapture', releasePointer);
+	return metrics;
 }

@@ -4,11 +4,11 @@ An original, browser-only RTS prototype using a pinned OpenRA engine and reusabl
 
 ![Browser skirmish](browser/evidence/world-economy.png)
 
-The first complete Chromium test passed selection, movement, construction, production, harvesting, combat and win/loss through tick 4,848. Native application launchers, packaging and workflows have been removed after that gate. Final browser-only/subpath CI is being validated. The game is not deployed yet. The initial headless SwiftShader test advanced roughly 3 simulation ticks/second against a configured 25; representative GPU/browser performance remains to be measured.
+Complete Chromium checks cover selection, movement, construction, production, harvesting, combat, win/loss and restart/recovery. The browser-only baseline is deployed at [thefutureissolo.com/rts/](https://thefutureissolo.com/rts/). Current cursor and responsiveness work is measured locally and validated separately before publication; actual Brave-on-Mac performance remains unverified. See [profiling evidence and limits](docs/BROWSER-PERFORMANCE.md).
 
 ## Run in a browser
 
-Players need a modern browser with WebAssembly and WebGL2. The intended deployment is **https://thefutureissolo.com/rts/**; publication is pending validation and authorized deployment access.
+Players need a modern browser with WebAssembly and WebGL2. Play at **https://thefutureissolo.com/rts/**. Deployment updates require the accepted artifact and final served-page checks described in `docs/TFIS-DEPLOYMENT.md`.
 
 For local development, install .NET SDK **8.0.426** (pinned in `global.json`), Python 3 and `patch`:
 
@@ -52,6 +52,8 @@ python3 tools/check-browser-style.py
 python3 tools/check-browser-dependencies.py
 python3 tools/build-browser-probe.py --skip-engine-build
 python3 tools/test-browser-probe.py
+python3 tools/test-browser-compositor.py
+python3 tools/test-browser-responsiveness.py
 python3 tools/smoke-browser-world.py --full-gameplay
 python3 tools/package-browser.py
 ```

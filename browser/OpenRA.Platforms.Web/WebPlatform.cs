@@ -15,6 +15,10 @@ namespace OpenRA.Platforms.Default
 {
 	public class WebPlatform : IPlatform
 	{
+		// Called after a nonblocking browser fence reports completion, before
+		// submitting more drawing. GL error validation remains enabled.
+		public static void CheckCompletedFrame() => OpenGL.CheckGLError(force: true);
+
 		/// <summary>The canvas the engine renders into.</summary>
 		public static string CanvasSelector { get; set; } = "#canvas";
 
