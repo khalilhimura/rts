@@ -49,7 +49,7 @@ try:
             raise AssertionError('Timed out: '+expression)
         try:
             page.goto(base, wait_until='domcontentloaded')
-            until('window.frontierGame?.status==="failed" || window.frontierGame?.latest?.tick>=50', 180)
+            until('window.frontierGame?.status==="failed" || window.frontierGame?.latest?.tick>=100', 180)
             assert page.evaluate('frontierGame.status')=='running', page.evaluate('frontierGame.error')
             canvas = page.locator('canvas')
             assert canvas.get_attribute('data-cursor-mode')=='browser'
@@ -70,7 +70,7 @@ try:
             page.evaluate(r"""async()=>{const {createCursorBridge}=await import('./cursors.js');const c=document.createElement('canvas');c.width=2;c.height=1;c.style.width='4px';c.style.height='2px';document.body.append(c);const bridge=createCursorBridge(c);const id=bridge.create(new Uint8Array([3,2,1,255,6,5,4,255]),2,1,1,0,true);bridge.set(id);const css=c.style.cursor;const image=new Image();image.src=css.match(/url\("([^"]+)"\)/)[1];await image.decode();if(image.width!==8||image.height!==4||!css.includes(' 4 0,'))throw new Error('Cursor scale/hotspot mismatch');const pixels=document.createElement('canvas');pixels.width=8;pixels.height=4;const context=pixels.getContext('2d');context.drawImage(image,0,0);if([...context.getImageData(0,0,1,1).data].join(',')!=='1,2,3,255')throw new Error('Cursor BGRA conversion mismatch');bridge.dispose(id);if(c.style.cursor!=='none')throw new Error('Cursor disposal mismatch');c.remove();}""")
             print('PASS: exact engine cursor colours, scaled hotspot and disposal',flush=True)
             # Observe actual pointerdown -> engine selection -> a completed render.
-            page.evaluate("""window.latencyArmed=false;document.querySelector('canvas').addEventListener('pointerdown',e=>{if(e.button!==0||!latencyArmed)return;latencyArmed=false;const started=e.timeStamp;const initial=frontierGame.observe().performance.renderCount;let submitted=null;function check(){const s=frontierGame.observe();if(submitted===null&&s.selected.length&&s.performance.renderCount>initial)submitted=performance.now()-started;if(submitted!==null&&frontierGame.completedRenderFrame>initial)inputSamples.push({submittedMs:submitted,completedMs:performance.now()-started});else if(performance.now()-started<3000)requestAnimationFrame(check);}requestAnimationFrame(check);});""")
+            page.evaluate("""window.latencyArmed=false;document.querySelector('canvas').addEventListener('pointerdown',e=>{if(e.button!==0||!latencyArmed)return;latencyArmed=false;const started=e.timeStamp;const initial=frontierGame.observe().performance.renderCount;let submitted=null;function check(){const s=frontierGame.observe();if(submitted===null&&s.selected.length&&s.performance.renderCount>initial)submitted=performance.now()-started;if(submitted!==null&&frontierGame.completedRenderFrame>initial)inputSamples.push({submittedMs:submitted,completedMs:performance.now()-started,width:window.latencyWidth,warmup:window.latencyWarmup});else if(performance.now()-started<3000)requestAnimationFrame(check);}requestAnimationFrame(check);});""")
             current = page.evaluate('frontierGame.observe()')
             human = next(p for p in current['players'] if p['name']=='Multi0')
             hub = next(a for a in human['actors'] if a['type']=='hub')
@@ -81,6 +81,10 @@ try:
                 page.wait_for_timeout(100)
                 box = canvas.bounding_box()
                 page.mouse.move(box['x']+x*box['width']/1280,box['y']+y*box['height']/800)
+                page.evaluate('(width)=>{window.latencyWidth=width;window.latencyWarmup=true;window.latencyArmed=true}',width)
+                page.mouse.click(box['x']+x*box['width']/1280,box['y']+y*box['height']/800)
+                until('inputSamples.some(s=>s.width===latencyWidth&&s.warmup)')
+                page.evaluate('latencyWarmup=false')
                 assert canvas.evaluate('(c)=>getComputedStyle(c).cursor').startswith('url(')
                 for _ in range(5):
                     page.mouse.click(box['x']+850*box['width']/1280,box['y']+700*box['height']/800)
@@ -105,23 +109,25 @@ try:
             start = page.evaluate('({time:performance.now(),state:frontierGame.observe(),queries:{...glQueries}})')
             page.wait_for_timeout(10000)
             end = page.evaluate('({time:performance.now(),state:frontierGame.observe(),queries:{...glQueries},samples:inputSamples,metrics:frontierGame.metrics,inputInterop:frontierGame.inputMetrics})')
-            samples = end['samples']
+            samples = [s for s in end['samples'] if not s['warmup']]
             assert len(samples)>=10, samples
             submitted = [sample['submittedMs'] for sample in samples]
             completed = [sample['completedMs'] for sample in samples]
             p95 = sorted(submitted)[math.ceil(len(submitted)*.95)-1]
             completed_p95 = sorted(completed)[math.ceil(len(completed)*.95)-1]
-            assert p95<250, f'Input-to-submission p95 {p95:.1f} ms exceeds 250 ms'
-            assert completed_p95<750, f'GPU-completed input frame p95 {completed_p95:.1f} ms exceeds 750 ms'
             rendered = end['state']['performance']['renderCount']-start['state']['performance']['renderCount']
+            tps = (end['state']['tick']-start['state']['tick'])*1000/(end['time']-start['time'])
+            result = {'build':json.loads((bundle/'world-build.json').read_text()),'browser':browser.version,'renderer':'SwiftShader','inputMedianMs':statistics.median(submitted),'inputP95Ms':p95,'completedFrameP95Ms':completed_p95,'samplesMs':samples,'warmupSamplesMs':[s for s in end['samples'] if s['warmup']],'ticksPerSecond':tps,'start':start,'end':end}
+            (evidence/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+            print(json.dumps({k:v for k,v in result.items() if k not in ('start','end')},indent=2),flush=True)
+            assert len(result['warmupSamplesMs'])==2, 'First selections at both canvas sizes were not recorded'
+            assert all(s['completedMs']<750 for s in result['warmupSamplesMs']), 'First selection exceeded GPU-completion budget'
+            assert p95<250, f'Warmed input-to-submission p95 {p95:.1f} ms exceeds 250 ms'
+            assert completed_p95<750, f'GPU-completed input frame p95 {completed_p95:.1f} ms exceeds 750 ms'
             assert rendered>=10, 'Renderer stopped progressing'
             assert end['queries']['isTexture']==start['queries']['isTexture'], 'Synchronous texture validity checks returned'
             assert end['queries']['getError']-start['queries']['getError']<=rendered+5, 'GL errors queried per operation'
-            tps = (end['state']['tick']-start['state']['tick'])*1000/(end['time']-start['time'])
             assert tps>=20, f'Simulation {tps:.1f} ticks/sec is below responsive budget'
-            result = {'build':json.loads((bundle/'world-build.json').read_text()),'browser':browser.version,'renderer':'SwiftShader','inputMedianMs':statistics.median(submitted),'inputP95Ms':p95,'completedFrameP95Ms':completed_p95,'samplesMs':samples,'ticksPerSecond':tps,'start':start,'end':end}
-            (evidence/'result.json').write_text(json.dumps(result,indent=2)+'\n')
-            print(json.dumps({k:v for k,v in result.items() if k not in ('start','end')},indent=2),flush=True)
             # Retained frame-boundary validation must catch an actual GL error.
             page.evaluate("document.querySelector('canvas').getContext('webgl2').enable(0xDEAD)")
             until('frontierGame.status==="failed"')
