@@ -16,6 +16,8 @@ The engine still targets retired .NET 6, producing NETSDK1138 warnings in its Re
 
 `tools/smoke-desktop.py` adds real XTest mouse-driven desktop gameplay validation (no injected state) for selection/movement, all buildings, production, both economies and a decisive combat result. It passed locally after the dependency fix through tick **4928**, with real destruction leading to human `Lost` / AI `Won`; see `docs/evidence/ci-repair-smoke.log`. Hosted CI runs it under an isolated virtual X display and uploads its evidence. Hosted CI status for the final exact feature/main commits must be verified from their runs, rather than inferred from local results.
 
+Hosted run [39930294262](https://github.com/khalilhimura/rts/actions/runs/39930294262) confirmed the pinned SDK, build, strict style, content and dependency checks passed, but exposed unreliable fixed wall-clock waits in the new desktop driver. The driver now waits for the real production queue's ready state, reported by read-only diagnostics once per 25 simulation ticks. Software rendering uses two Mesa worker threads, disables VSync and caps rendering to the game frame rate; simulation rules and game speed are unchanged. Failures retain a screenshot and print the last observed state for diagnosis.
+
 Browser delivery is assessed separately in [BROWSER.md](BROWSER.md): no browser deployment has been made.
 
 ## Original milestone checks (historical, before CI repair)

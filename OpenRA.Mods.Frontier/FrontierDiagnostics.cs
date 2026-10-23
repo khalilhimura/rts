@@ -18,7 +18,7 @@ namespace OpenRA.Mods.Frontier
 		void ITick.Tick(Actor self)
 		{
 			var world = self.World;
-			if (!enabled || world.Type != WorldType.Regular || world.WorldTick % 125 != 0)
+			if (!enabled || world.Type != WorldType.Regular || world.WorldTick % 25 != 0)
 				return;
 
 			WriteState(world);
@@ -43,6 +43,11 @@ namespace OpenRA.Mods.Frontier
 					earned = p.PlayerActor.Trait<PlayerResources>().Earned,
 					spent = p.PlayerActor.Trait<PlayerResources>().Spent,
 					kills = p.PlayerActor.Trait<PlayerStatistics>().UnitsKilled + p.PlayerActor.Trait<PlayerStatistics>().BuildingsKilled,
+					queues = p.PlayerActor.TraitsImplementing<ProductionQueue>().Select(q => new
+					{
+						type = q.Info.Type,
+						items = q.AllQueued().Select(i => new { name = i.Item, ready = i.Done, remaining = i.RemainingTime, paused = i.Paused })
+					}),
 					actors = world.Actors.Where(a => a.Owner == p && a.Info.HasTraitInfo<HealthInfo>()).Select(a => new
 					{
 						id = a.ActorID,
