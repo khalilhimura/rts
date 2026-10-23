@@ -41,7 +41,7 @@ namespace OpenRA.Platforms.Default
 
 		// A canvas is only rendered while the tab is visible, and the rAF loop stops
 		// when it is not, so the window is never in a suspended-but-ticking state.
-		public bool HasInputFocus => true;
+		public bool HasInputFocus => WebInput.HasInputFocus;
 		public bool IsSuspended => false;
 
 		public GLProfile GLProfile => GLProfile.Embedded;
@@ -59,6 +59,7 @@ namespace OpenRA.Platforms.Default
 
 			context = new WebGraphicsContext(this);
 			context.InitializeOpenGL();
+			OpenGL.DeferErrorChecks = true;
 		}
 
 		public void PumpInput(IInputHandler inputHandler)
@@ -74,8 +75,9 @@ namespace OpenRA.Platforms.Default
 		public void GrabWindowMouseFocus() { }
 		public void ReleaseWindowMouseFocus() { }
 
-		public IHardwareCursor CreateHardwareCursor(string name, Size size, byte[] data, int2 hotspot, bool pixelDouble) => null;
-		public void SetHardwareCursor(IHardwareCursor cursor) { }
+		public IHardwareCursor CreateHardwareCursor(string name, Size size, byte[] data, int2 hotspot, bool pixelDouble) =>
+			new WebHardwareCursor(data, size.Width, size.Height, hotspot.X, hotspot.Y, pixelDouble);
+		public void SetHardwareCursor(IHardwareCursor cursor) => WebHardwareCursor.Apply(cursor);
 		public void SetWindowTitle(string title) { }
 		public void SetRelativeMouseMode(bool mode) { }
 

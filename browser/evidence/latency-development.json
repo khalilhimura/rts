@@ -1,0 +1,491 @@
+{
+  "baselineCommit": "e6428a8f2b9e5014e9c1ae0a311c10d9878849a0",
+  "candidate": "local development samples, not exact-head acceptance",
+  "records": {
+    "baseline": {
+      "browser": "154.0.8037.57",
+      "ticksPerSecond": 4.646236548395972,
+      "start": {
+        "time": 29677.10000000149,
+        "tick": 106,
+        "metrics": {
+          "elapsedMs": 24701.199999999255,
+          "ticksPerSecond": 4.291289492008615,
+          "callbacksPerSecond": 4.331773355140772,
+          "meanStepMs": 223.70467289711272,
+          "maxStepMs": 389.40000000037253
+        }
+      },
+      "end": {
+        "time": 49693.300000000745,
+        "tick": 199,
+        "metrics": {
+          "elapsedMs": 44717,
+          "ticksPerSecond": 4.450209092738779,
+          "callbacksPerSecond": 4.472571952501286,
+          "meanStepMs": 218.9289999999944,
+          "maxStepMs": 389.40000000037253
+        },
+        "gl": {
+          "getError": {
+            "count": 17766,
+            "ms": 18748.39999996312
+          },
+          "getParameter": {
+            "count": 188,
+            "ms": 4.300000002607703
+          },
+          "flush": {
+            "count": 376,
+            "ms": 2.599999999627471
+          },
+          "drawElements": {
+            "count": 846,
+            "ms": 2.099999999627471
+          },
+          "bufferSubData": {
+            "count": 658,
+            "ms": 2.899999998509884
+          }
+        }
+      }
+    },
+    "frame-gl-check": {
+      "browser": "154.0.8037.57",
+      "ticksPerSecond": 5.158499868557836,
+      "start": {
+        "time": 27118.800000000745,
+        "tick": 100,
+        "metrics": {
+          "elapsedMs": 21335.699999999255,
+          "ticksPerSecond": 4.686980038152181,
+          "callbacksPerSecond": 4.733849838533703,
+          "meanStepMs": 202.80396039627198,
+          "maxStepMs": 289
+        }
+      },
+      "end": {
+        "time": 47279.699999999255,
+        "tick": 204,
+        "metrics": {
+          "elapsedMs": 42506.800000000745,
+          "ticksPerSecond": 4.799232122860258,
+          "callbacksPerSecond": 4.822757770521338,
+          "meanStepMs": 201.85365853673983,
+          "maxStepMs": 291.90000000037253
+        },
+        "gl": {
+          "getParameter": {
+            "count": 200,
+            "ms": 4.199999999254942
+          },
+          "flush": {
+            "count": 400,
+            "ms": 8.099999994039536
+          },
+          "drawElements": {
+            "count": 900,
+            "ms": 2.7000000067055225
+          },
+          "bufferSubData": {
+            "count": 700,
+            "ms": 4.5000000055879354
+          },
+          "getError": {
+            "count": 100,
+            "ms": 20.90000000409782
+          }
+        }
+      }
+    },
+    "queries-and-cursor": {
+      "browser": "154.0.8037.57",
+      "ticksPerSecond": 4.766846582022125,
+      "start": {
+        "time": 27124.10000000149,
+        "tick": 102,
+        "metrics": {
+          "elapsedMs": 21309,
+          "ticksPerSecond": 4.786709840912291,
+          "callbacksPerSecond": 5.396780702989347,
+          "meanStepMs": 162.71652173914987,
+          "maxStepMs": 560.9000000003725
+        }
+      },
+      "end": {
+        "time": 47263.20000000112,
+        "tick": 198,
+        "metrics": {
+          "elapsedMs": 42257.90000000037,
+          "ticksPerSecond": 4.685514424521764,
+          "callbacksPerSecond": 5.513761923805914,
+          "meanStepMs": 156.34721030046276,
+          "maxStepMs": 560.9000000003725
+        },
+        "gl": {
+          "getParameter": {
+            "count": 192,
+            "ms": 8.099999994039536
+          },
+          "flush": {
+            "count": 384,
+            "ms": 7.0999999940395355
+          },
+          "drawElements": {
+            "count": 864,
+            "ms": 5.200000002980232
+          },
+          "bufferSubData": {
+            "count": 672,
+            "ms": 3.5000000055879354
+          },
+          "getError": {
+            "count": 96,
+            "ms": 16449.799999991432
+          }
+        }
+      }
+    },
+    "nonblocking-frame": {
+      "browser": "154.0.8037.57",
+      "ticksPerSecond": 7.641861417589982,
+      "start": {
+        "time": 19646.799999998882,
+        "tick": 110,
+        "metrics": {
+          "elapsedMs": 14409.5,
+          "ticksPerSecond": 7.633852666643533,
+          "callbacksPerSecond": 11.52017766057115,
+          "meanStepMs": 6.4746987951627695,
+          "maxStepMs": 540.8000000007451,
+          "renderFrames": 68,
+          "gpuBusyCallbacks": 98
+        },
+        "phase": {
+          "logicMilliseconds": 358.09770000000003,
+          "renderMilliseconds": 668.2985999999996,
+          "inputMilliseconds": 2.0998000000000006,
+          "logicCount": 122,
+          "renderCount": 68,
+          "allocatedBytes": 71276152,
+          "dispatchedEvents": 0,
+          "maximumQueueMilliseconds": 0,
+          "totalQueueMilliseconds": 0
+        }
+      },
+      "end": {
+        "time": 39668.09999999963,
+        "tick": 263,
+        "metrics": {
+          "elapsedMs": 33831.40000000037,
+          "ticksPerSecond": 7.7738432343916335,
+          "callbacksPerSecond": 12.207594128531348,
+          "meanStepMs": 4.157384987879932,
+          "maxStepMs": 540.8000000007451,
+          "renderFrames": 165,
+          "gpuBusyCallbacks": 248
+        },
+        "phase": {
+          "logicMilliseconds": 542.7939999999999,
+          "renderMilliseconds": 1024.5956999999992,
+          "inputMilliseconds": 5.6993,
+          "logicCount": 307,
+          "renderCount": 165,
+          "allocatedBytes": 77964288,
+          "dispatchedEvents": 0,
+          "maximumQueueMilliseconds": 0,
+          "totalQueueMilliseconds": 0
+        },
+        "gl": {
+          "getError": {
+            "count": 100,
+            "ms": 75.49999999627471
+          },
+          "getParameter": {
+            "count": 200,
+            "ms": 2.8999999966472387
+          },
+          "flush": {
+            "count": 500,
+            "ms": 7.899999987334013
+          },
+          "drawElements": {
+            "count": 900,
+            "ms": 0.6999999992549419
+          },
+          "bufferSubData": {
+            "count": 700,
+            "ms": 1.8999999947845936
+          }
+        }
+      }
+    },
+    "bounded-catchup": {
+      "browser": "154.0.8037.57",
+      "ticksPerSecond": 24.322151136947742,
+      "start": {
+        "time": 10110.700000001118,
+        "tick": 103,
+        "metrics": {
+          "elapsedMs": 4952.699999999255,
+          "ticksPerSecond": 20.796737133283965,
+          "callbacksPerSecond": 10.70123367052476,
+          "meanStepMs": 15.939622641488347,
+          "maxStepMs": 561.6000000014901,
+          "renderFrames": 22,
+          "gpuBusyCallbacks": 31
+        },
+        "phase": {
+          "logicMilliseconds": 297.29999999999984,
+          "renderMilliseconds": 527.5,
+          "inputMilliseconds": 0.8999999999999999,
+          "logicCount": 109,
+          "renderCount": 22,
+          "allocatedBytes": 68726000,
+          "dispatchedEvents": 0,
+          "maximumQueueMilliseconds": 0,
+          "totalQueueMilliseconds": 0
+        }
+      },
+      "end": {
+        "time": 30133.60000000149,
+        "tick": 590,
+        "metrics": {
+          "elapsedMs": 24436.599999999627,
+          "ticksPerSecond": 24.144111701300876,
+          "callbacksPerSecond": 12.644966975766053,
+          "meanStepMs": 5.709385113236057,
+          "maxStepMs": 561.6000000014901,
+          "renderFrames": 115,
+          "gpuBusyCallbacks": 194
+        },
+        "phase": {
+          "logicMilliseconds": 777.9000000000013,
+          "renderMilliseconds": 883.4999999999995,
+          "inputMilliseconds": 5.700000000000001,
+          "logicCount": 596,
+          "renderCount": 115,
+          "allocatedBytes": 79570208,
+          "dispatchedEvents": 0,
+          "maximumQueueMilliseconds": 0,
+          "totalQueueMilliseconds": 0
+        },
+        "gl": {
+          "getError": {
+            "count": 96,
+            "ms": 46.600000005215406
+          },
+          "getParameter": {
+            "count": 192,
+            "ms": 2.800000000745058
+          },
+          "flush": {
+            "count": 480,
+            "ms": 9.5
+          },
+          "drawElements": {
+            "count": 864,
+            "ms": 0.8000000007450581
+          },
+          "bufferSubData": {
+            "count": 672,
+            "ms": 5.199999997392297
+          }
+        }
+      }
+    },
+    "timer-final": {
+      "browser": "154.0.8037.57",
+      "renderer": "headless SwiftShader",
+      "ticksPerSecond": 24.43607143928143,
+      "start": {
+        "time": 10490.700000001118,
+        "tick": 109,
+        "metrics": {
+          "elapsedMs": 5011.200000001118,
+          "ticksPerSecond": 21.751277139203324,
+          "callbacksPerSecond": 11.374521072794398,
+          "logicCallbacks": 105,
+          "meanStepMs": 5.501234567896636,
+          "maxStepMs": 544.0999999996275,
+          "renderFrames": 22,
+          "gpuBusyCallbacks": 35
+        },
+        "phase": {
+          "logicMilliseconds": 348.3985999999999,
+          "renderMilliseconds": 512.9994999999999,
+          "inputMilliseconds": 1.7997000000000005,
+          "logicCount": 109,
+          "renderCount": 22,
+          "allocatedBytes": 68802464,
+          "dispatchedEvents": 0,
+          "maximumQueueMilliseconds": 0,
+          "totalQueueMilliseconds": 0
+        }
+      },
+      "end": {
+        "time": 30502.099999999627,
+        "tick": 598,
+        "metrics": {
+          "elapsedMs": 24546.200000001118,
+          "ticksPerSecond": 24.362223073224076,
+          "callbacksPerSecond": 12.140372033145107,
+          "logicCallbacks": 594,
+          "meanStepMs": 2.4593049327533842,
+          "maxStepMs": 544.0999999996275,
+          "renderFrames": 119,
+          "gpuBusyCallbacks": 179
+        },
+        "phase": {
+          "logicMilliseconds": 1136.6911000000005,
+          "renderMilliseconds": 927.6976999999998,
+          "inputMilliseconds": 8.09789999999999,
+          "logicCount": 598,
+          "renderCount": 119,
+          "allocatedBytes": 79747816,
+          "dispatchedEvents": 0,
+          "maximumQueueMilliseconds": 0,
+          "totalQueueMilliseconds": 0
+        }
+      },
+      "gl": {
+        "getError": {
+          "count": 100,
+          "ms": 50.2999999858439
+        },
+        "getParameter": {
+          "count": 200,
+          "ms": 3.099999999627471
+        },
+        "flush": {
+          "count": 500,
+          "ms": 18.099999997764826
+        },
+        "drawElements": {
+          "count": 900,
+          "ms": 0.7000000011175871
+        },
+        "bufferSubData": {
+          "count": 700,
+          "ms": 1.0999999959021807
+        }
+      },
+      "cpuHotFunctions": [
+        {
+          "function": "(idle)",
+          "samples": 13621
+        },
+        {
+          "function": "wasm-function[415]",
+          "samples": 139
+        },
+        {
+          "function": "wasm-function[415]",
+          "samples": 139
+        },
+        {
+          "function": "wasm-function[415]",
+          "samples": 136
+        },
+        {
+          "function": "wasm-function[415]",
+          "samples": 104
+        },
+        {
+          "function": "(program)",
+          "samples": 85
+        },
+        {
+          "function": "getError",
+          "samples": 27
+        },
+        {
+          "function": "getError",
+          "samples": 20
+        },
+        {
+          "function": "wasm-function[419]",
+          "samples": 9
+        },
+        {
+          "function": "wasm-function[415]",
+          "samples": 9
+        },
+        {
+          "function": "requestAnimationFrame",
+          "samples": 8
+        },
+        {
+          "function": "wasm-function[419]",
+          "samples": 8
+        }
+      ]
+    },
+    "timer-input": {
+      "browser": "154.0.8037.57",
+      "renderer": "SwiftShader",
+      "ticksPerSecond": 25.041902785539413,
+      "inputMedianMs": 50.299999999813735,
+      "inputP95Ms": 193.30000000074506,
+      "completedFrameP95Ms": 397.7000000011176,
+      "samplesMs": [
+        {
+          "submittedMs": 142.69999999925494,
+          "completedMs": 230.69999999925494
+        },
+        {
+          "submittedMs": 46.40000000037253,
+          "completedMs": 256.1000000014901
+        },
+        {
+          "submittedMs": 212.60000000149012,
+          "completedMs": 427.5
+        },
+        {
+          "submittedMs": 47.59999999962747,
+          "completedMs": 241.39999999850988
+        },
+        {
+          "submittedMs": 25.300000000745058,
+          "completedMs": 258.09999999962747
+        },
+        {
+          "submittedMs": 53,
+          "completedMs": 261.40000000037253
+        },
+        {
+          "submittedMs": 132,
+          "completedMs": 389.5
+        },
+        {
+          "submittedMs": 23,
+          "completedMs": 275.40000000037253
+        },
+        {
+          "submittedMs": 193.30000000074506,
+          "completedMs": 397.7000000011176
+        },
+        {
+          "submittedMs": 17.09999999962747,
+          "completedMs": 238.80000000074506
+        }
+      ],
+      "interop": {
+        "mouseCalls": 77,
+        "mouseInteropMilliseconds": 2.600000001490116,
+        "maxMouseInteropMilliseconds": 0.40000000037252903
+      },
+      "managed": {
+        "logicMilliseconds": 993.7874999999985,
+        "renderMilliseconds": 1001.2976,
+        "inputMilliseconds": 35.89870000000005,
+        "logicCount": 574,
+        "renderCount": 105,
+        "allocatedBytes": 79443488,
+        "dispatchedEvents": 79,
+        "maximumQueueMilliseconds": 65.7999,
+        "totalQueueMilliseconds": 2550.0979999999995
+      }
+    }
+  }
+}

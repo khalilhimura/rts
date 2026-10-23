@@ -1,6 +1,6 @@
 # Browser build and validation
 
-Frontier Collective runs the actual pinned OpenRA world, rendering, simulation, production and Pioneer AI through .NET WebAssembly/WebGL2. The first full Chromium match passed every gameplay gate through win/loss at tick 4,842 (final snapshot 4,848). Native app entrypoints/packaging were removed after that gate. Final browser-only and `/rts/` validation is in progress; nothing has been deployed.
+Frontier Collective runs the actual pinned OpenRA world, rendering, simulation, production and Pioneer AI through .NET WebAssembly/WebGL2. Complete Chromium acceptance covers the full skirmish and lifecycle. The browser-only baseline is deployed at `thefutureissolo.com/rts/`; fixes require their own validation and artifact handoff. Actual Brave-on-Mac performance is not yet verified.
 
 ## Build and run
 
@@ -26,6 +26,7 @@ python3 tools/check-browser-style.py
 python3 tools/check-browser-dependencies.py
 python3 tools/build-browser-probe.py --skip-engine-build
 python3 tools/test-browser-probe.py
+python3 tools/test-browser-responsiveness.py
 python3 tools/smoke-browser-world.py --full-gameplay
 python3 tools/package-browser.py
 ```
@@ -42,7 +43,7 @@ Evidence stays in ignored `.runtime/browser-world-evidence/`; published CI artif
 
 ## Measurements and limits
 
-The first headless Chromium 154 / SwiftShader match took about 27 minutes, roughly 3 simulation ticks/second against the configured 25. It also included the original inefficient full-history polling driver, now corrected. This is a material limitation and is not representative GPU/browser usability evidence. The Release world bundle measured roughly 37.0 MB raw / 15.2 MB individually gzipped; its largest file was 4,199,705 bytes. Repeat measurements after pruning/optimization rather than treating this as a production download budget.
+See [browser performance](../docs/BROWSER-PERFORMANCE.md) for reproducible GL/CPU/input profiling, A/B results, scheduler bounds and remaining software GPU limits. `python3 tools/profile-browser.py --browser-path /path/to/chromium` records a 20-second CPU sample, WebGL query counts/times, logic/render phases and managed allocation deltas. It warms the actual world through tick 100 and does not inject game state. Raw evidence stays under `.runtime/latency-profiles/`.
 
 Historical probe evidence in `evidence/` recorded 956 / 4174 / 21 reflected types, 126.6 ms managed inspection, 1.1467 seconds total probe, and 7.8 ms for 10,000 warmed primitive interop calls. Those are diagnostic lower bounds, excluding world simulation, rendering, buffers and Rust. Current browser builds may have additional generated types. Profile before any [Rust decision](../docs/RUST-ASSESSMENT.md).
 
@@ -52,4 +53,4 @@ Historical probe evidence in `evidence/` recorded 956 / 4174 / 21 reflected type
 
 The Rosebud/OpenHV export was research only; corresponding modern reproducible source was not established, so its binaries/content were not adopted. User-supplied REA is an optional MIT Node/MCP inspection toolkit, not a port or compiler; it was inspected but never installed/executed. Exact findings/links are in `upstream-sources.json` and [provenance](../docs/PROVENANCE.md).
 
-The active product is browser-only. Native apps, multiplayer, Lua campaigns, representative GPU performance work and production polish remain separate milestones. Shared engine source and recoverable history remain. Deployment at `thefutureissolo.com/rts/` still needs an authorized TFIS publishing path; the earlier environment proxy HTTP 403 was not retried or bypassed.
+The active product is browser-only. Native apps, multiplayer, Lua campaigns, representative GPU performance work and production polish remain separate milestones. Shared engine source and recoverable history remain. The baseline deployment used the parent’s authorized TFIS publishing path. This checkout does not change TFIS or retry the earlier Cloudflare proxy HTTP 403. Replacement artifacts require a separate authorized integration and final live-page test.

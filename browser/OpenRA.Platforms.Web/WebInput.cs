@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace OpenRA.Platforms.Default
 {
@@ -30,9 +31,14 @@ namespace OpenRA.Platforms.Default
 
 		readonly record struct Event(
 			EventKind Kind, int Type, int Button, int X, int Y, int DeltaX, int DeltaY,
-			Modifiers Modifiers, string Text, bool IsRepeat);
+			Modifiers Modifiers, string Text, bool IsRepeat, long QueuedAt);
 
 		static readonly Queue<Event> Pending = new();
+		public static long DispatchedEvents { get; private set; }
+		public static double MaximumQueueMilliseconds { get; private set; }
+		public static double TotalQueueMilliseconds { get; private set; }
+		public static bool HasInputFocus { get; private set; }
+		public static void Focus(bool focused) => HasInputFocus = focused;
 
 		/// <summary>The most recent modifier state, reported separately by the engine.</summary>
 		public static Modifiers CurrentModifiers { get; private set; }
@@ -40,18 +46,18 @@ namespace OpenRA.Platforms.Default
 		public static void QueueMouse(int type, int button, int x, int y, int deltaX, int deltaY, int modifiers)
 		{
 			CurrentModifiers = (Modifiers)modifiers;
-			Pending.Enqueue(new Event(EventKind.Mouse, type, button, x, y, deltaX, deltaY, CurrentModifiers, null, false));
+			Pending.Enqueue(new Event(EventKind.Mouse, type, button, x, y, deltaX, deltaY, CurrentModifiers, null, false, Stopwatch.GetTimestamp()));
 		}
 
 		public static void QueueKey(int type, string code, int modifiers, bool isRepeat)
 		{
 			CurrentModifiers = (Modifiers)modifiers;
-			Pending.Enqueue(new Event(EventKind.Key, type, (int)MapKeycode(code), 0, 0, 0, 0, CurrentModifiers, code, isRepeat));
+			Pending.Enqueue(new Event(EventKind.Key, type, (int)MapKeycode(code), 0, 0, 0, 0, CurrentModifiers, code, isRepeat, Stopwatch.GetTimestamp()));
 		}
 
 		public static void QueueText(string text)
 		{
-			Pending.Enqueue(new Event(EventKind.Text, 0, 0, 0, 0, 0, 0, CurrentModifiers, text, false));
+			Pending.Enqueue(new Event(EventKind.Text, 0, 0, 0, 0, 0, 0, CurrentModifiers, text, false, Stopwatch.GetTimestamp()));
 		}
 
 		/// <summary>Number of events waiting, for diagnostics.</summary>
@@ -65,6 +71,10 @@ namespace OpenRA.Platforms.Default
 			while (Pending.Count > 0)
 			{
 				var e = Pending.Dequeue();
+				var queueMilliseconds = Stopwatch.GetElapsedTime(e.QueuedAt).TotalMilliseconds;
+				DispatchedEvents++;
+				TotalQueueMilliseconds += queueMilliseconds;
+				MaximumQueueMilliseconds = Math.Max(MaximumQueueMilliseconds, queueMilliseconds);
 				switch (e.Kind)
 				{
 					case EventKind.Mouse:

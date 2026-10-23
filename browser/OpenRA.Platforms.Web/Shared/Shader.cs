@@ -163,7 +163,7 @@ namespace OpenRA.Platforms.Default
 				var texture = (ITextureInternal)kv.Value;
 
 				// Evict disposed textures from the cache
-				if (OpenGL.glIsTexture(texture.ID))
+				if (!texture.IsDisposed)
 				{
 					OpenGL.glActiveTexture(OpenGL.GL_TEXTURE0 + kv.Key);
 					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture.ID);
