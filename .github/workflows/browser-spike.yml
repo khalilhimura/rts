@@ -1,0 +1,36 @@
+name: Browser compatibility spike
+on:
+  push:
+    branches: [feat/browser-wasm-spike]
+  pull_request:
+    paths: ['browser/**', 'tools/*browser-probe.py', '.github/workflows/browser-spike.yml']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.428
+            8.0.426
+      - run: dotnet workload install wasm-tools --skip-manifest-update
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python3 -m pip install -r browser/requirements-test.txt
+      - run: python3 -m playwright install chromium
+      - run: python3 tools/build-browser-probe.py
+      - run: python3 tools/test-browser-probe.py
+      - name: Upload probe evidence (not gameplay acceptance)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-compatibility-${{ github.sha }}
+          path: |
+            .runtime/browser-evidence
+            .runtime/browser-probe/probe-build.json
+          if-no-files-found: warn

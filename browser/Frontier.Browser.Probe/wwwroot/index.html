@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frontier browser compatibility probe</title>
+<style>
+body { margin: 2rem auto; padding: 0 1rem; max-width: 60rem; background: #182124; color: #e3eeee; font: 16px system-ui; }
+canvas { display: block; width: min(100%, 640px); height: auto; border: 1px solid #729c9a; image-rendering: pixelated; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+</style>
+<h1>Frontier browser compatibility probe</h1>
+<p>This is a platform diagnostic, <strong>not a playable game</strong>. No game world, AI, harvesting, production or combat runs here.</p>
+<p>It loads the pinned OpenRA assemblies, parses actual Frontier rules, decodes the original CC0 scout sprites using OpenRA, uploads those pixels to WebGL2, and checks scaled pointer input.</p>
+<canvas id="sprites" width="512" height="64" aria-label="Eight-direction scout sprite sheet"></canvas>
+<pre id="result">Loading WebAssembly…</pre>
+<script type="module" src="./main.js"></script>
+</html>

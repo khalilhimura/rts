@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "playable": false,
+  "report": {
+    "engineTypes": 956,
+    "commonTypes": 4174,
+    "frontierTypes": 21,
+    "actors": [
+      "hub",
+      "generator",
+      "refinery",
+      "fabricator",
+      "scout",
+      "tank",
+      "artillery",
+      "harvester"
+    ],
+    "tankBuildDuration": 250,
+    "map": "Salt Basin",
+    "width": 512,
+    "height": 64,
+    "managedMs": 126.5999,
+    "runtime": "8.0.32",
+    "webgl": "full-sheet RGBA readback matches OpenRA decoder",
+    "primitiveInterop10000Ms": 7.799999997019768,
+    "bootMs": 1146.699999999255
+  },
+  "inputs": [
+    {
+      "x": 256,
+      "y": 32,
+      "button": "Right"
+    },
+    {
+      "x": 256,
+      "y": 32,
+      "button": "Right"
+    }
+  ],
+  "browser": "154.0.8037.57",
+  "wasmRequests": 188
+}

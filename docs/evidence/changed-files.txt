@@ -1,5 +1,6 @@
 .editorconfig
 .gitattributes
+.github/workflows/browser-spike.yml
 .github/workflows/ci.yml
 .gitignore
 .vscode/extensions.json
@@ -25,9 +26,20 @@ assets/sources/pixvoxel/Tank_Large_W.vox
 assets/sources/pixvoxel/Tank_S_Large_W.vox
 assets/sources/pixvoxel/Truck_Large_W.vox
 assets/sources/pixvoxel/manifest.json
+browser/Frontier.Browser.Probe/Frontier.Browser.Probe.csproj
+browser/Frontier.Browser.Probe/Program.cs
+browser/Frontier.Browser.Probe/wwwroot/index.html
+browser/Frontier.Browser.Probe/wwwroot/main.js
+browser/README.md
+browser/evidence/local-probe-build.json
+browser/evidence/local-probe-result.json
+browser/evidence/local-probe.png
+browser/requirements-test.txt
+browser/upstream-sources.json
 docs/BROWSER.md
 docs/PROVENANCE.md
 docs/ROADMAP.md
+docs/RUST-ASSESSMENT.md
 docs/SDK-README.upstream.md
 docs/VALIDATION.md
 docs/evidence/changed-files.txt
@@ -133,6 +145,7 @@ packaging/windows/buildpackage.nsi
 packaging/windows/buildpackage.sh
 play.cmd
 play.sh
+tools/build-browser-probe.py
 tools/check-dependencies.py
 tools/check-runtime-log.py
 tools/check.sh
@@ -140,6 +153,7 @@ tools/fetch-engine.py
 tools/generate-content.py
 tools/requirements.txt
 tools/smoke-desktop.py
+tools/test-browser-probe.py
 tools/test-content.py
 utility.cmd
 utility.sh

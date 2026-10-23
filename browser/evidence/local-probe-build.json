@@ -1,0 +1,24 @@
+{
+  "playable": false,
+  "measurementsExclude": [
+    "probe-build.json"
+  ],
+  "engineCommit": "524b6abdf1874b0132a7b06c1f89c7012f60124c",
+  "files": 214,
+  "rawBytes": 35050238,
+  "gzipBytes": 14316447,
+  "largestFile": "_framework/System.Private.CoreLib.wasm",
+  "largestFileBytes": 4199705,
+  "cfStaticAssetLimitBytes": 26214400,
+  "assetSource": "https://opengameart.org/content/pixvoxel-colorful-isometric-wargame-sprites",
+  "contentSha256": {
+    "actors.yaml": "226e98f29e8eb3e592e8b979ec570c6b0229c2c0a4d02a69fe10795bb8b29e9a",
+    "map.yaml": "a6e375ffe504bbea476737f08ffb282e090b2a4d5e42081f1351f74c14fedb69",
+    "scout.png": "fc292ed92da24fddfa2031eff446ee7da4d076fbf1cf38c9feab4651962e114b"
+  },
+  "assemblySha256": {
+    "OpenRA.Game.dll": "80b8e5212c1e436c0d149146bb673939d493850a07c94e4157fb0651925f50b4",
+    "OpenRA.Mods.Common.dll": "f9b53cc466262b40431e2417c777755df26c2627a93edd3db602337f944c5957",
+    "OpenRA.Mods.Frontier.dll": "ff272c89be41e63005e0e23b8a556960ad4fcb323c0f654113459e8ecc7013fe"
+  }
+}

@@ -57,4 +57,4 @@ Code and rules are GPL-3.0-or-later. New art and the imported PixVoxel models ar
 
 ## Browser play
 
-There is currently no deployed browser version of this project. The native desktop client needs a significant source-verified Wasm port, or a persistent Linux host with authenticated browser streaming. See [the assessed options, costs and access blockers](docs/BROWSER.md). The desktop game has not been substituted with another engine or a static preview.
+Browser-native play is now the product direction. There is no playable or deployed browser version yet. The separate [WASM compatibility probe](browser/README.md) tests the actual engine assemblies, original rules/assets and browser graphics/input boundaries; it starts no game world. See [the browser architecture and remaining gates](docs/BROWSER.md). Keep the working desktop baseline only until full browser gameplay acceptance passes, then remove desktop application entrypoints, packaging and other desktop-only product code while preserving shared engine code and Git history. Native apps are deferred until user demand.
