@@ -426,8 +426,8 @@
       "renderer": "SwiftShader",
       "ticksPerSecond": 25.041902785539413,
       "inputMedianMs": 50.299999999813735,
-      "inputP95Ms": 193.30000000074506,
-      "completedFrameP95Ms": 397.7000000011176,
+      "inputP95Ms": 212.60000000149012,
+      "completedFrameP95Ms": 427.5,
       "samplesMs": [
         {
           "submittedMs": 142.69999999925494,
@@ -487,5 +487,6 @@
         "totalQueueMilliseconds": 2550.0979999999995
       }
     }
-  }
+  },
+  "percentileMethod": "empirical nearest rank; with 10 samples p95 is the maximum"
 }

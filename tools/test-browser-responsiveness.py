@@ -5,6 +5,7 @@ import functools
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import io
 import json
+import math
 from pathlib import Path
 import statistics
 import threading
@@ -108,8 +109,8 @@ try:
             assert len(samples)>=10, samples
             submitted = [sample['submittedMs'] for sample in samples]
             completed = [sample['completedMs'] for sample in samples]
-            p95 = sorted(submitted)[int((len(submitted)-1)*.95)]
-            completed_p95 = sorted(completed)[int((len(completed)-1)*.95)]
+            p95 = sorted(submitted)[math.ceil(len(submitted)*.95)-1]
+            completed_p95 = sorted(completed)[math.ceil(len(completed)*.95)-1]
             assert p95<250, f'Input-to-submission p95 {p95:.1f} ms exceeds 250 ms'
             assert completed_p95<750, f'GPU-completed input frame p95 {completed_p95:.1f} ms exceeds 750 ms'
             rendered = end['state']['performance']['renderCount']-start['state']['performance']['renderCount']
