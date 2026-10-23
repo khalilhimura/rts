@@ -1,9 +1,9 @@
 # Roadmap
 
-1. **Browser-native first:** complete the [browser port gates](../browser/README.md): actual world/HUD boot, local simulation and Pioneer AI, then browser input/production/harvesting/combat/win-loss acceptance. Use client-side simulation and static asset delivery; retain source pins, licenses and the advisory gate. Profile before any [Rust decision](RUST-ASSESSMENT.md).
-2. **Switch the active product to browser-only:** after gameplay acceptance, remove desktop entrypoints, packaging/workflows and dependencies the browser does not need, preserving shared engine code and recoverable Git history. Desktop/mobile native apps wait for demand. Do not expand native packaging tests now.
-3. **Improve the skirmish:** tune costs, ranges and AI attack timing; provide difficulty options; add attack-move/stop buttons and clearer production, power and victory feedback. Expand automated browser gameplay coverage. Add fog/shroud rendering together with visibility tests.
-4. **Replace temporary presentation:** polish original terrain/buildings/UI; integrate CC0 firing, motion and destruction animations; add original audio and accessible cursor variants. Check visual facing order and terrain transitions.
-5. **Expand carefully:** additional maps, infantry, defensive structures, a second original faction, technology upgrades, then multiplayer desync and balance tests. Keep source pins and provenance current.
+1. Complete exact-head browser-only CI and deploy the verified artifact at `thefutureissolo.com/rts/` through authorized TFIS infrastructure, preserving unrelated routes.
+2. Profile real browser/GPU performance. The initial headless software run is functionally complete but slow. Measure rendering, interop, memory and simulation timing before runtime/AOT work or any Rust decision.
+3. Improve the single-map skirmish: balance costs/ranges, add difficulty and clearer power/production/victory feedback, expand browser lifecycle/accessibility coverage, and test fog/shroud together with visibility rules.
+4. Polish original terrain/buildings/UI and CC0 unit animation; add original audio and accessible cursor variants. Keep exact source/license records.
+5. Add maps, infantry, defenses, a second faction and technology upgrades; design multiplayer command ordering/desync tests separately. A relay is not authoritative simulation.
 
-The current milestone has one orthogonal map, mirror-faction skirmish, finite salvage, a simple AI and silent combat. Campaigns, naval/air units, superweapons, an isometric terrain conversion and public distribution are outside this first milestone.
+The active product is browser-only. Native applications are deferred until demand warrants them. Shared browser-required engine code and recoverable history remain; desktop packaging is removed. The current prototype has one orthogonal map, mirror factions, finite salvage, simple AI and silent combat. Lua campaigns, naval/air units and an isometric terrain conversion are outside this milestone.

@@ -9,15 +9,13 @@
     <WasmGenerateAppBundle>true</WasmGenerateAppBundle>
     <PublishTrimmed>false</PublishTrimmed>
     <InvariantGlobalization>false</InvariantGlobalization>
+    <BrowserEngineRoot Condition="'$(BrowserEngineRoot)' == ''">$(MSBuildThisFileDirectory)../../engine</BrowserEngineRoot>
     <WasmAppDir>$(MSBuildThisFileDirectory)../../.runtime/browser-probe</WasmAppDir>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Probe the exact desktop baseline's managed code, without copying or
-         modifying engine source. Native platform assemblies are not bundled. -->
-    <Reference Include="OpenRA.Game"><HintPath>../../engine/bin/OpenRA.Game.dll</HintPath></Reference>
-    <Reference Include="OpenRA.Mods.Common"><HintPath>../../engine/bin/OpenRA.Mods.Common.dll</HintPath></Reference>
-    <Reference Include="OpenRA.Mods.Frontier"><HintPath>../../engine/bin/OpenRA.Mods.Frontier.dll</HintPath></Reference>
-    <Reference Include="Newtonsoft.Json"><HintPath>../../engine/bin/Newtonsoft.Json.dll</HintPath></Reference>
+    <!-- Exercise the same isolated .NET 8 engine used by the browser world. -->
+    <ProjectReference Include="../OpenRA.Mods.Frontier.Web/OpenRA.Mods.Frontier.Web.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <WasmExtraFilesToDeploy Include="wwwroot/index.html" />
   </ItemGroup>
   <!-- SDK 8's incremental bundle target can retain an older JS entrypoint. -->

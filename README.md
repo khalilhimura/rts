@@ -1,23 +1,26 @@
 # Frontier Collective
 
-A first playable, original RTS skirmish built on **OpenRA Mod SDK 20250330**. One 64×64 battlefield, one faction, two opposing outposts. Build an economy, produce an army, and destroy the opponent's structures. This is a small prototype with temporary art and balance, using an orthogonal grid and eight-direction voxel sprites.
+An original, browser-only RTS prototype using a pinned OpenRA engine and reusable/original art. One 64×64 battlefield, one faction, resource harvesting, four buildings, three combat vehicles and Pioneer AI. No retail EA art, audio, branding or game archives are used.
 
-![Desktop skirmish](docs/evidence/skirmish.png)
+![Browser skirmish](browser/evidence/world-economy.png)
 
-## Run
+The first complete Chromium test passed selection, movement, construction, production, harvesting, combat and win/loss through tick 4,848. Native application launchers, packaging and workflows have been removed after that gate. Final browser-only/subpath CI is being validated. The game is not deployed yet. The initial headless SwiftShader test advanced roughly 3 simulation ticks/second against a configured 25; representative GPU/browser performance remains to be measured.
 
-Linux prerequisites: .NET 8 SDK **and .NET 6 runtime**, Python 3, `make`, `curl`, and a desktop with OpenGL 3.2+ (Mesa software rendering also worked). OpenRA's native packages provide its runtime dependencies; SDL2, OpenAL and FreeType must be loadable. The tested toolchain was SDK **8.0.426** (pinned by `global.json`) / runtime 6.0.36 on Debian 13. The pinned engine still targets the retired .NET 6 runtime; see [validation and limitations](docs/VALIDATION.md).
+## Run in a browser
+
+Players need a modern browser with WebAssembly and WebGL2. The intended deployment is **https://thefutureissolo.com/rts/**; publication is pending validation and authorized deployment access.
+
+For local development, install .NET SDK **8.0.426** (pinned in `global.json`), Python 3 and `patch`:
 
 ```sh
-make                    # fetches SHA-256-verified OpenRA source, then builds
-./play.sh               # immediately starts Salt Basin against Pioneer AI
+dotnet workload install wasm-tools --skip-manifest-update
+python3 -m pip install -r browser/requirements-test.txt
+python3 -m playwright install chromium
+python3 tools/build-browser-world.py
+python3 -m http.server 8080 --bind 127.0.0.1 --directory .runtime/browser-world
 ```
 
-For the standard menu / skirmish lobby, run `./launch-game.sh`. Choose **Singleplayer → Skirmish**, Salt Basin, and Pioneer AI in the opposing slot. The menu creates a default bot when opening a new skirmish.
-
-On Windows, install the same .NET prerequisites, Python 3 (`python` on PATH), and curl. Run `make.cmd`, then `play.cmd`. These SDK entrypoints are retained and adapted but **have not been tested on Windows**. macOS packaging and installers are also untested.
-
-`play.sh` keeps settings, logs and replays in ignored `.runtime/`. It creates a local game and does not advertise a public server. First build needs internet access to GitHub and NuGet. If `engine/` already contains an unexpected checkout, acquisition stops and preserves it: review and move it aside manually before rebuilding.
+Open **http://127.0.0.1:8080**. Source acquisition verifies SHA-256 and preserves an unexpected existing `engine/` checkout. Patched engine source and generated output stay in ignored `.runtime/`. No native game runtime, SDL, OpenAL or FreeType installation is needed. The developer rules-checking utility is a .NET 8 console tool.
 
 ## Play
 
@@ -43,18 +46,16 @@ On Windows, install the same .NET prerequisites, Python 3 (`python` on PATH), an
 
 ## Validate and develop
 
-Generated content is checked in; playing does not require Pillow. To regenerate art/map or run content tests:
-
 ```sh
-python3 -m pip install -r tools/requirements.txt
-python3 tools/generate-content.py
-./tools/check.sh
+python3 tools/check-browser-content.py
+python3 tools/check-browser-style.py
+python3 tools/check-browser-dependencies.py
+python3 tools/build-browser-probe.py --skip-engine-build
+python3 tools/test-browser-probe.py
+python3 tools/smoke-browser-world.py --full-gameplay
+python3 tools/package-browser.py
 ```
 
-`tools/check.sh` runs seven integrity/reachability/acquisition/audit tests, OpenRA rules and localization lint with warnings as errors, actual sprite-frame decoding, and interface checks. Run `make check` for strict code/style checks and `python3 tools/check-dependencies.py` for a direct/transitive advisory gate. The effective NuGet client is patched to 6.12.5. See [desktop smoke instructions and recorded results](docs/VALIDATION.md), [exact sources and licenses](docs/PROVENANCE.md), and the [roadmap](docs/ROADMAP.md). Engine sources, compiled output, caches and runtime state are ignored by Git.
+The full test serves the game under `/rts/`, enforces a trailing-slash redirect and a local CSP, blocks external requests, and drives real browser input through the complete skirmish and restart/context-loss checks. It keeps simulation-progress budgets and produces screenshots/state/performance evidence. No test injects game state or changes game speed. See [browser instructions and source pins](browser/README.md), [validation](docs/VALIDATION.md), [TFIS integration](docs/TFIS-DEPLOYMENT.md), [provenance](docs/PROVENANCE.md), and the [roadmap](docs/ROADMAP.md).
 
-Code and rules are GPL-3.0-or-later. New art and the imported PixVoxel models are CC0. SDK UI assets retain their upstream licensing and notices. No retail game content or game archives are needed. See [COPYING](COPYING) and [licenses](licenses/README.md). The original SDK guide is retained in [docs/SDK-README.upstream.md](docs/SDK-README.upstream.md).
-
-## Browser play
-
-Browser-native play is now the product direction. The [actual Salt Basin browser world](browser/README.md) runs locally in Chromium with the OpenRA renderer, HUD, original assets/fonts, local simulation and Pioneer AI. Selection, movement and base construction have passed real browser input tests; full combat acceptance and hosted validation are in progress. It is not deployed. See [the browser architecture and remaining gates](docs/BROWSER.md). Keep the working desktop baseline only until full browser gameplay acceptance passes, then remove desktop application entrypoints, packaging and other desktop-only product code while preserving shared engine code and Git history. Native apps are deferred until user demand.
+Code/rules are GPL-3.0-or-later; new art and the imported PixVoxel models are CC0. Upstream UI/fonts and platform sources keep their own notices. See [COPYING](COPYING) and [licenses](licenses/README.md). Native apps and multiplayer are deferred. The previous desktop baseline remains recoverable from Git commit `70a1ff084e9ff5557bab26c17f1588cd678293ae`; history is preserved.

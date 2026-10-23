@@ -1,0 +1,36 @@
+{
+  "result": "passed",
+  "testedStage": "first real world integration, before browser lifecycle and desktop cleanup commits",
+  "finalTick": 4848,
+  "configuredTicksPerSecond": 25,
+  "headless": true,
+  "renderer": "Chromium 154 SwiftShader",
+  "approxWallMinutes": 27,
+  "approxTicksPerWallSecond": 3,
+  "performanceIncludes": "startup, software rendering and the original driver polling complete history; no game speed change",
+  "players": [
+    {
+      "name": "Multi0",
+      "state": "Lost",
+      "earned": 7200,
+      "kills": 5
+    },
+    {
+      "name": "Multi1",
+      "state": "Won",
+      "earned": 17600,
+      "kills": 10
+    }
+  ],
+  "checks": [
+    "world/HUD",
+    "selection",
+    "movement",
+    "generator/refinery/fabricator placement",
+    "scout/tank/artillery production",
+    "both harvesting economies",
+    "combat",
+    "Pioneer AI",
+    "decisive win/loss"
+  ]
+}

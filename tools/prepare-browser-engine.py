@@ -4,6 +4,7 @@ Source edits live in reviewed patches/additions. Each patch digest gets a separa
 generated directory, so changing a patch never destroys a previous build tree.
 """
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import shutil
@@ -14,11 +15,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def prepare():
     baseline = ROOT/'engine'
+    source = json.loads((ROOT/'browser/engine-source.json').read_text())
+    spec = importlib.util.spec_from_file_location('fetch_engine', ROOT/'tools/fetch-engine.py')
+    acquisition = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(acquisition)
+    acquisition.fetch(source['version'], source['url'], source['sha256'], baseline)
     marker = json.loads((baseline/'.frontier-source.json').read_text())
     assert marker['sha256'] == '401b46b32ebddd04ea5ad342528195afe555d0800a7bbb5e07d00f3eb5b9e2ec', 'Unexpected engine baseline'
     patches = sorted((ROOT/'browser/engine-patches').glob('*.patch'))
     additions = sorted(p for p in (ROOT/'browser/engine-additions').rglob('*') if p.is_file())
-    digest = hashlib.sha256(b''.join(p.read_bytes() for p in patches+additions)).hexdigest()[:12]
+    digest = hashlib.sha256(Path(__file__).read_bytes()+b''.join(
+        str(p.relative_to(ROOT)).encode()+b'\0'+p.read_bytes() for p in patches+additions)).hexdigest()[:12]
     out = ROOT/'.runtime'/('browser-engine-'+digest)
     stamp = out/'.browser-source.json'
     if stamp.exists():
@@ -30,7 +37,7 @@ def prepare():
     if out.exists():
         raise RuntimeError('Unmarked browser directory preserved: '+str(out))
     out.mkdir(parents=True)
-    for name in ('OpenRA.Game', 'OpenRA.Mods.Common'):
+    for name in ('OpenRA.Game', 'OpenRA.Mods.Common', 'OpenRA.Utility'):
         shutil.copytree(baseline/name, out/name, ignore=shutil.ignore_patterns('bin', 'obj'))
     for name in ('Directory.Build.props', 'COPYING', 'AUTHORS', 'VERSION', '.editorconfig'):
         if (baseline/name).exists():

@@ -8,3 +8,7 @@
 
 # Custom for Visual Studio
 *.cs     diff=csharp
+
+# Unified patch context requires a leading space before source tabs/blank lines.
+# The patched source itself is checked by the strict browser Debug build.
+browser/engine-patches/*.patch -whitespace

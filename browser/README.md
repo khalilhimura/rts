@@ -1,77 +1,53 @@
-# Browser-native port
+# Browser build and validation
 
-This branch now contains the actual OpenRA browser world as well as the earlier compatibility diagnostic. Salt Basin, the HUD, original fonts/sprites, two-player simulation, Pioneer AI, selection, movement and building placement have run in Chromium. Full match acceptance and hosted validation are still in progress; this is not a deployed browser product. Keep the desktop baseline recoverable until the complete acceptance gate passes.
+Frontier Collective runs the actual pinned OpenRA world, rendering, simulation, production and Pioneer AI through .NET WebAssembly/WebGL2. The first full Chromium match passed every gameplay gate through win/loss at tick 4,842 (final snapshot 4,848). Native app entrypoints/packaging were removed after that gate. Final browser-only and `/rts/` validation is in progress; nothing has been deployed.
 
-## Run the actual world
+## Build and run
 
-Use the pinned .NET SDK 8.0.426, its `wasm-tools` workload, Python 3, `curl`, and `patch`. The browser host and isolated engine copy target .NET 8; no native game process, socket server, SDL, OpenAL or FreeType is used by the browser host.
+Use SDK **8.0.426**, Python 3 and `patch`; .NET 6 and native SDL/OpenAL/FreeType are not required. Only the developer lint utility executes as a .NET 8 console tool.
 
 ```sh
 dotnet workload install wasm-tools --skip-manifest-update
 python3 -m pip install -r browser/requirements-test.txt
 python3 -m playwright install chromium
 python3 tools/build-browser-world.py
-python3 tools/check-browser-style.py
-python3 tools/check-browser-dependencies.py
-python3 tools/smoke-browser-world.py --full-gameplay
+python3 -m http.server 8080 --bind 127.0.0.1 --directory .runtime/browser-world
 ```
 
-For manual play, serve `.runtime/browser-world/` on loopback, for example `python3 -m http.server 8080 --bind 127.0.0.1 --directory .runtime/browser-world`, and open `http://127.0.0.1:8080`. It immediately starts Salt Basin against Pioneer AI. Left click/drag selects; right click moves or attacks. Build Generator → Refinery → Fabricator, then queue vehicles. The refinery's crawler harvests automatically. Destroy opposing structures to win. The browser needs WebGL2 and WebAssembly, and a secure context (HTTPS or localhost) for integrity checks. The current prototype is silent.
+Open `http://127.0.0.1:8080`. Left click/drag selects; right click moves/attacks. Build Generator → Refinery → Fabricator, then scout/tank/artillery. The refinery's crawler harvests automatically. Destroy opposing structures to win. The menu provides Resume/Restart; New skirmish reloads the page. The prototype is silent. Browser WebAssembly, WebGL2 and a secure context (HTTPS or localhost) are required.
 
-`tools/prepare-browser-engine.py` applies the tracked patches and additions to a separate hash-addressed copy of the verified engine. It preserves `engine/` and rejects edits to generated source instead of overwriting them. `platform-imports.json` pins the imported GPL platform/input/GLSL files to their original hashes; their copyright headers, COPYING and AUTHORS are retained. The font backend rasterizes the exact staged GNU FreeSans bytes using browser Canvas. The fork's modified FreeType error handling was not adopted.
+`engine-source.json` pins the acquired engine commit/archive/hash. `prepare-browser-engine.py` applies tracked patches/additions to a separate hash-addressed copy, preserves unexpected source directories and rejects edits to generated source. Existing game logic/rules remain; EchoConnection carries local orders without a game server. Browser rule loading uses the existing synchronous path, static maps omit native watching, and unsupported GC compaction is skipped. Canvas FontFace uses the exact staged GNU FreeSans bytes; the fork's modified FreeType error handling was not adopted. No replacement simulation or remote desktop is included.
 
-The browser loop executes the original engine's logic/render scheduling one step per animation callback. Existing `EchoConnection` carries local commands, and trait-defined lobby defaults configure the real world and AI. Rules load synchronously because the browser runtime is single-threaded; static map discovery has no native directory watcher; unsupported large-object-heap compaction is skipped. No replacement simulation is included. Lua campaigns and multiplayer are outside this single-map milestone.
-
-The smoke test blocks requests outside its loopback origin and drives real canvas events; state exports only observe the actual engine. It checks tick progress with bounded waits. Evidence is written to `.runtime/browser-world-evidence/`, including console/state snapshots, screenshots and the dependency audit. `world-build.json` records content/assembly hashes, source-patch digest, download measurements and the 25 MiB per-file gate. Headless SwiftShader results establish functionality, not representative gameplay performance.
-
-## Run the probe
-
-Use the repository-pinned .NET SDK 8.0.426, .NET 6 runtime for compiling the existing engine, and Python 3. The probe itself executes on the browser's .NET 8.0.32 WebAssembly runtime. This is a compatibility baseline, not the final supported-runtime decision for the browser product.
+## Required checks
 
 ```sh
-dotnet workload install wasm-tools --skip-manifest-update
-python3 -m pip install -r browser/requirements-test.txt
-python3 -m playwright install chromium
-python3 tools/build-browser-probe.py
+python3 tools/check-browser-content.py
+python3 tools/check-browser-style.py
+python3 tools/check-browser-dependencies.py
+python3 tools/build-browser-probe.py --skip-engine-build
 python3 tools/test-browser-probe.py
+python3 tools/smoke-browser-world.py --full-gameplay
+python3 tools/package-browser.py
 ```
 
-An existing Chromium can be selected with `--browser-path /path/to/chromium`. The test serves files only on loopback, blocks browser requests outside that local origin, checks real WebAssembly resources loaded, and closes its server/browser afterward. To inspect manually, serve `.runtime/browser-probe/` with a local static server. No Cloudflare credentials or deployment are involved.
+Select an installed Chromium with `--browser-path /path/to/chromium` on either browser test. The content check runs source/map/acquisition/audit regression tests, complete rules/Fluent lint, actual sprite-frame decoding and interface checks against staged browser content. Strict Debug compilation checks patched engine/platform/mod/host code with warnings as errors. Release rebuilds avoid stale shared Debug outputs. The dependency gate checks direct/transitive advisories, full resolved inventory and the absence of the unused desktop NuGet executable.
 
-The build references the existing, pinned OpenRA.Game, OpenRA.Mods.Common and OpenRA.Mods.Frontier assemblies without modifying their source. Only the real Frontier actor YAML, Salt Basin metadata and CC0 scout sheet are staged. The probe verifies inherited MiniYaml rules, reflection-based production trait loading, OpenRA PNG decoding, full WebGL2 pixel readback and pointer coordinates at two CSS scales. Its WebGL diagnostic shader and input sink are small platform tests; they are not the engine's world renderer or live unit controls. No alternative simulation is included.
+The compatibility probe remains a required diagnostic: inherited MiniYaml rules, reflection-based production trait loading, original PNG decoding, complete RGBA GPU readback and scaled pointer input. Its small shader/input sink is not the world renderer; full gameplay is separately required. It now references the same isolated .NET 8 engine as the world.
 
-## Recorded local measurements
+The full test serves only `/rts/`, redirects `/rts` to `/rts/`, blocks external requests and enforces a local CSP without inline script/style or general JavaScript eval. It drives real canvas/keyboard events and observes read-only engine state: selection/movement, all structures/units, both economies, combat/AI and decisive win/loss. Scaled input, focus release, the actual in-game restart and context-loss recovery are also checked. Tick budgets, wall limits and a 90-second stall detector bound waits. No game state or speed is changed to pass tests.
 
-Chromium 154.0.8037.57, headless SwiftShader, loopback HTTP, one run on the selected Codex environment. These are diagnostic startup measurements, not network-delivery or gameplay performance claims.
+Evidence stays in ignored `.runtime/browser-world-evidence/`; published CI artifacts include snapshots, screenshots, dependency reports and client timing. `world-build.json` records exact source/assembly/content identities, download sizes and the 25 MiB file gate. `package-browser.py` accepts only a clean committed bundle with matching successful gameplay/lifecycle/subpath evidence; it creates `.runtime/rts-site.zip` containing **only `rts/`**. See [TFIS integration](../docs/TFIS-DEPLOYMENT.md).
 
-| Measurement | Result |
-|---|---:|
-| OpenRA / Common / Frontier types reflected | 956 / 4174 / 21 |
-| Reflection + inherited rules + trait + PNG inspection | 126.6 ms |
-| Complete probe, including WebGL/readback and interop check | 1146.7 ms |
-| 10,000 warmed primitive JS↔.NET calls | 7.8 ms |
-| Bundle files / raw bytes | 214 / approximately 35.1 MB (excluding build report) |
-| Sum of individually gzipped files | approximately 14.3 MB |
-| Largest file | 4,199,705 bytes (`System.Private.CoreLib.wasm`) |
+## Measurements and limits
 
-All eight scout directions were decoded and every RGBA byte matched GPU readback. Both right clicks reached OpenRA's `IInputHandler` as `(256,32,Right)`. The interop number is a lower-bound primitive round trip; it excludes buffers, JSON, Rust, path search, game state and threading. No Rust speedup follows from it.
+The first headless Chromium 154 / SwiftShader match took about 27 minutes, roughly 3 simulation ticks/second against the configured 25. It also included the original inefficient full-history polling driver, now corrected. This is a material limitation and is not representative GPU/browser usability evidence. The Release world bundle measured roughly 37.0 MB raw / 15.2 MB individually gzipped; its largest file was 4,199,705 bytes. Repeat measurements after pruning/optimization rather than treating this as a production download budget.
 
-Results, input/assembly hashes and a screenshot are in [evidence](evidence/). Repeat-run outputs remain in ignored `.runtime/browser-evidence/`. The build fails if any file exceeds Cloudflare's 25 MiB static-asset limit. The bundle is deliberately untrimmed because OpenRA depends heavily on reflection; trimming/AOT need separate correctness and download-size tests.
+Historical probe evidence in `evidence/` recorded 956 / 4174 / 21 reflected types, 126.6 ms managed inspection, 1.1467 seconds total probe, and 7.8 ms for 10,000 warmed primitive interop calls. Those are diagnostic lower bounds, excluding world simulation, rendering, buffers and Rust. Current browser builds may have additional generated types. Profile before any [Rust decision](../docs/RUST-ASSESSMENT.md).
 
-## Reusable-source findings
+## Sources and scope
 
-Exact inspected references and license evidence are recorded in [upstream-sources.json](upstream-sources.json).
+`platform-imports.json` pins imported GPL platform/input/GLSL files and original hashes; headers, COPYING and AUTHORS are retained in `licenses/`. [openra-wasm commit 424fb8b](https://github.com/Baronvonbonbon/openra-wasm/tree/424fb8b08d98de057015bc2cfcaddeaf10f3cc14) supplied reusable platform source, backported to the pinned engine rather than adopting its newer engine wholesale. Its mod-loading hang was traced here to waiting for background rule tasks on a single-thread runtime. No fork mods or retail archives were checked out or reused.
 
-* [Baronvonbonbon/openra-wasm at `424fb8b`](https://github.com/Baronvonbonbon/openra-wasm/tree/424fb8b08d98de057015bc2cfcaddeaf10f3cc14) has GPL-3.0-or-later source for a WebGL2 platform, DOM input, browser loop, FreeType integration and an Eluant/MoonSharp shim. It targets .NET 10 and a newer OpenRA tree. Its [startup script](https://github.com/Baronvonbonbon/openra-wasm/blob/424fb8b08d98de057015bc2cfcaddeaf10f3cc14/OpenRA.Web/wwwroot/main.js) explicitly labels full startup as hanging during mod loading. It is useful implementation research, not a verified drop-in port. Sparse source inspection excluded mods and game archives. No fork code or retail content was imported into this probe.
-* [hakyong-tae/openhv-web](https://github.com/hakyong-tae/openhv-web) redistributes a Rosebud OpenHV static export. We inspected its README/NOTES, not its binary/content bundle. Its claimed port source, [openra-wasm-port/root](https://gitlab.com/openra-wasm-port/root), exposes branches last changed in July 2024; the inspected `prep-2307` commit targets net6.0/netstandard2.1 with a native SDL platform. Matching source/build instructions for the newer export were not established. Do not adopt that export as a reproducible corresponding-source baseline.
-* [Rosebud's engineering account](https://rosebud.ai/engineering/porting-openra-to-the-browser) is evidence that the approach is feasible. Its desktop-assumption fixes help identify work; they do not supply a reproducible Frontier build by themselves.
-* User-supplied [morluto/rea](https://github.com/morluto/rea) is a Node/TypeScript CLI and MCP inspection tool, not a game engine or browser compiler. We reviewed MIT license text, package 6.7.0, current commit metadata, managed-analysis source, WABT wrapper and CDP provider. It was actively updated on 2026-10-23; that is not an execution or quality certification. Its host-side filesystem/process integrations are development tools, not browser-game dependencies. It could audit managed native boundaries if needed; existing source inspection and Playwright cover this spike. It was not installed or executed. The environment's Node 24.19.0 also falls below its declared Node 24.22.1 minimum for that major line. Third-party licenses apply separately.
+The Rosebud/OpenHV export was research only; corresponding modern reproducible source was not established, so its binaries/content were not adopted. User-supplied REA is an optional MIT Node/MCP inspection toolkit, not a port or compiler; it was inspected but never installed/executed. Exact findings/links are in `upstream-sources.json` and [provenance](../docs/PROVENANCE.md).
 
-## Next gates
-
-1. **Whole-world browser boot:** implemented locally with tracked platform sources/patches, original content, Canvas font rasterization and a nonblocking engine loop. The public fork's mod-loading hang was traced to synchronous waits for background rule-loading tasks; browser rule loading now uses the engine's existing synchronous path. Static map watching and unsupported GC compaction were adapted without changing game rules. Hosted exact-commit validation remains required.
-2. **Local simulation and AI:** the actual `EchoConnection` session runs two players with trait-defined defaults and a fixed random seed. Pioneer AI has constructed its base and delivered salvage; both economies and all human combat vehicle production have been observed. Full combat acceptance remains in progress.
-3. **Playable parity:** automate real browser canvas input and observe selection, movement, all four structures, scout/tank/artillery production, both harvesting economies, projectiles/damage/kills, AI attacks and decisive win/loss. Test resize, context loss, focus/pause and restart. Compare recorded commands/state against the desktop baseline where applicable. No merge to main and no playable-deployment claim before this passes.
-4. **Browser-only product:** remove desktop application entrypoints, packaging/workflows, desktop-only dependencies and documentation after gate 3, retaining shared browser-required code and history. Measure download size, memory, frame/tick timing on representative browsers; then deploy validated static files through the existing authorized Cloudflare path. No Worker is needed for single-player simulation. Native apps and multiplayer are deferred.
-
-The actual world clears the initial integration barrier, but complete gameplay, browser lifecycle handling and representative performance still need validation. This remains a multi-stage engine port. [Rust assessment](../docs/RUST-ASSESSMENT.md) describes what to benchmark before considering a language change.
+The active product is browser-only. Native apps, multiplayer, Lua campaigns, representative GPU performance work and production polish remain separate milestones. Shared engine source and recoverable history remain. Deployment at `thefutureissolo.com/rts/` still needs an authorized TFIS publishing path; the earlier environment proxy HTTP 403 was not retried or bypassed.

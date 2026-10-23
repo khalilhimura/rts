@@ -1,17 +1,19 @@
-# Browser port — current status
+# Browser architecture and delivery
 
-**The actual Frontier world now runs locally in Chromium; full browser acceptance and deployment are pending.** No remote desktop or replacement engine is being built. The working desktop baseline remains at `main` commit `70a1ff084e9ff5557bab26c17f1588cd678293ae` until real browser acceptance passes. Then remove desktop entrypoints, packaging, workflows, dependencies and documentation that the browser no longer needs, preserving shared engine code and recoverable Git history. Native desktop/mobile apps are deferred until demand warrants them.
+Frontier Collective now executes the actual OpenRA simulation, Pioneer AI, renderer and input on the player's device through .NET WebAssembly and WebGL2. The first complete browser match passed all gameplay gates through decisive win/loss; desktop-only product files were then removed. Final exact-head browser-only validation is in progress. Nothing is deployed yet.
 
-## Architecture and cost
+The pinned engine source is acquired from `browser/engine-source.json`; tracked patches/additions produce a separate hash-addressed build tree. Existing EchoConnection carries single-player orders without a TCP game server. Browser FontFace/Canvas rasterizes the exact GNU FreeSans files. Rules use the existing synchronous loading path; static maps require no filesystem watcher; unsupported GC compaction is skipped. The browser menu restarts through a fresh browser session.
 
-Run OpenRA's simulation, Pioneer AI, rendering and input on the player's device through .NET WebAssembly and WebGL2. Serve versioned files through Cloudflare Workers Static Assets. The current engine already has an in-memory `EchoConnection` for local orders; adapting skirmish/session setup to use it avoids a gameplay server for single-player.
+## Hosting and cost
 
-[Cloudflare documents free, unlimited static-asset requests and no additional asset-storage cost](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/). Its [platform limits](https://developers.cloudflare.com/workers/platform/limits/) cap individual static files at 25 MiB. Keep static requests on the asset-serving path; do not invoke a Worker for every file. No Containers or always-running compute are needed for this design. Optional account/save APIs and later multiplayer signaling/relay would be separately metered functions. A relay is not authoritative simulation; multiplayer design is deferred.
+The authorized target is **https://thefutureissolo.com/rts/**. Serve the verified static bundle under that prefix and preserve all unrelated TFIS routes. See [integration requirements](TFIS-DEPLOYMENT.md). Single-player simulation needs no Worker execution, Containers, always-running server or remote desktop.
 
-The environment's earlier read-only Cloudflare token/account API requests failed at its network proxy with HTTP 403. They were not retried or bypassed. Token validity and account permissions remain unverified. No infrastructure, credentials, tunnels or security permissions were created. Local browser development does not require that API access.
+[Cloudflare documents free unlimited static-asset requests and no additional asset-storage cost](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/), with a [25 MiB per-file limit](https://developers.cloudflare.com/workers/platform/limits/). Keep file requests on the asset-serving path. Optional save APIs or future multiplayer relays would be separately metered; a relay is not authoritative simulation. Those functions are deferred.
 
-## Tested milestone
+The current environment's earlier token/account API requests were blocked by its network proxy with HTTP 403. Access and token permissions remain unverified. No credentials, tunnels, paid infrastructure or security permissions were created, and that denial was not retried or bypassed. Deployment requires an authorized TFIS delivery environment or restored permitted access.
 
-The browser feature branch now boots the actual Salt Basin map, OpenRA world renderer and HUD in WebGL2, using the original assets and fonts. A real local session starts the human and Pioneer AI through the existing in-memory order connection. Browser events have selected and moved a scout and constructed/placed the generator, refinery and fabricator; both players have delivered salvage. Combat-unit production and full combat/win-loss acceptance remain under test.
+## Remaining product work
 
-The earlier isolated compatibility probe remains a separate check of inherited rules, reflection, PNG decoding, full RGBA GPU readback and scaled pointer input. It starts no world. See [world/probe instructions, measurements, source review and remaining gates](../browser/README.md). Desktop gameplay evidence does not satisfy the browser gates. Nothing has been deployed to Cloudflare.
+The first software-rendered browser match advanced roughly 3 ticks/second against a configured 25; this is a material performance limitation. Measure real GPU browsers, memory and frame/tick timing, then profile rendering/interop and evaluate runtime/AOT options. Do not infer performance from the primitive interop probe. No Rust rewrite has been approved; see [assessment](RUST-ASSESSMENT.md).
+
+Native desktop/mobile apps, multiplayer and Lua campaigns are deferred. Source history preserves the previous baseline. See [browser setup and tests](../browser/README.md), [validation](VALIDATION.md), and [roadmap](ROADMAP.md).

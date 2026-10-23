@@ -5,6 +5,7 @@ import functools
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import io
+import urllib.parse
 from pathlib import Path
 import threading
 import time
@@ -20,19 +21,33 @@ args=parser.parse_args()
 out=args.bundle.resolve()
 evidence=ROOT/'.runtime/browser-world-evidence'
 evidence.mkdir(exist_ok=True)
+(evidence/'validation-result.json').unlink(missing_ok=True)
 
 class Handler(SimpleHTTPRequestHandler):
     def log_message(self,*_args): pass
+    def do_GET(self):
+        path=urllib.parse.urlsplit(self.path).path
+        if path=='/rts':
+            self.send_response(308);self.send_header('Location','/rts/');self.end_headers();return
+        if not path.startswith('/rts/'):
+            self.send_error(404);return
+        self.path=self.path[len('/rts'):]
+        super().do_GET()
+    def end_headers(self):
+        self.send_header('Cache-Control','no-cache')
+        self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'")
+        super().end_headers()
 
 server=ThreadingHTTPServer(('127.0.0.1',0),functools.partial(Handler,directory=str(out)))
 threading.Thread(target=server.serve_forever,daemon=True).start()
-base=f'http://127.0.0.1:{server.server_port}/'
+origin=f'http://127.0.0.1:{server.server_port}'
+base=origin+'/rts/'
 try:
     with sync_playwright() as p:
         browser=p.chromium.launch(executable_path=args.browser_path,headless=True,
             args=['--use-angle=swiftshader','--enable-unsafe-swiftshader'])
         page=browser.new_page(viewport={'width':1280,'height':900})
-        page.route('**/*',lambda route:route.continue_() if route.request.url.startswith(base) else route.abort())
+        page.route('**/*',lambda route:route.continue_() if route.request.url.startswith(base) or route.request.url==origin+'/rts' else route.abort())
         messages=[]
         (evidence/'console-live.txt').write_text('')
         def record(message):
@@ -42,9 +57,16 @@ try:
             print(message[:600],flush=True)
         page.on('console',lambda message:record(message.text))
         page.on('pageerror',lambda error:record(str(error)))
+        def browser_until(expression,timeout):
+            deadline=time.monotonic()+timeout/1000
+            while time.monotonic()<deadline:
+                if page.evaluate(expression): return
+                page.wait_for_timeout(100)
+            raise RuntimeError('Browser condition timed out: '+expression)
         try:
-            page.goto(base,wait_until='domcontentloaded')
-            page.wait_for_function('window.frontierGame?.status === "failed" || window.frontierGame?.latest?.tick >= 100',timeout=180000)
+            page.goto(origin+'/rts',wait_until='domcontentloaded')
+            assert page.url==base,'Subpath must redirect to its trailing slash'
+            browser_until('window.frontierGame?.status === "failed" || window.frontierGame?.latest?.tick >= 100',timeout=180000)
             state=page.evaluate('window.frontierGame')
             (evidence/'world-state.json').write_text(json.dumps(state,indent=2)+'\n')
             print('World checkpoint: tick '+str(state.get('latest',{}).get('tick')),flush=True)
@@ -122,11 +144,9 @@ try:
             page.set_viewport_size({'width':1280,'height':900})
             click(*screen(current_scout['x'],current_scout['y']))
             page.keyboard.press('Escape')
-            page.wait_for_timeout(500)
-            state()
+            wait_until(lambda value:value['latest']['menuOpen'],'Escape opens the game menu',timeout=30)
             page.keyboard.press('Escape')
-            page.wait_for_timeout(500)
-            state()
+            wait_until(lambda value:not value['latest']['menuOpen'],'Escape resumes the game',timeout=30)
             print('PASS: actual Salt Basin world with two players, advancing ticks and responsive input')
             if args.full_gameplay:
                 def build(name,icon_x,candidates):
@@ -169,6 +189,7 @@ try:
                 wait_until(lambda value:{p['state'] for p in value['latest']['players']}=={'Won','Lost'},
                     'decisive AI combat outcome',timeout=1500,max_ticks=8000)
                 final=state()
+                final['build']=json.loads((out/'world-build.json').read_text())
                 players=[player for sample in final['history'] for player in sample['players']]
                 for name in ('Multi0','Multi1'):
                     assert {'hub','generator','refinery','fabricator','harvester'} <= {
@@ -181,24 +202,26 @@ try:
                 print('Measured browser performance: '+json.dumps(metrics),flush=True)
                 print('PASS: full original Frontier browser skirmish acceptance',flush=True)
                 # Real engine menu -> confirmation -> browser-native fresh session.
-                page.keyboard.press('Escape')
-                page.wait_for_timeout(1000)
+                if not state()['latest']['menuOpen']: page.keyboard.press('Escape')
+                wait_until(lambda value:value['latest']['menuOpen'],'endgame menu visible',timeout=30)
                 click(203,435)
                 page.wait_for_timeout(1000)
                 page.keyboard.press('Enter')
-                page.wait_for_function('window.frontierGame?.status === "failed" || (window.frontierGame?.latest?.tick > 5 && window.frontierGame.latest.tick < 100)',timeout=180000)
+                browser_until('window.frontierGame?.status === "failed" || (window.frontierGame?.latest?.tick > 5 && window.frontierGame.latest.tick < 100)',timeout=180000)
                 fresh=page.evaluate('window.frontierGame')
                 assert fresh['status']=='running',fresh.get('error')
                 assert all(p['state']=='Undefined' for p in fresh['latest']['players']),'Restart retained ended match'
                 print('PASS: in-game restart starts a fresh browser world',flush=True)
                 page.evaluate("document.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()")
-                page.wait_for_function('window.frontierGame.status === "failed"',timeout=10000)
+                browser_until('window.frontierGame.status === "failed"',timeout=10000)
                 assert 'Graphics context lost' in page.evaluate('window.frontierGame.error')
                 page.locator('#restart').click()
-                page.wait_for_function('window.frontierGame?.status === "failed" || window.frontierGame?.latest?.tick > 5',timeout=180000)
+                browser_until('window.frontierGame?.status === "failed" || window.frontierGame?.latest?.tick > 5',timeout=180000)
                 recovered=page.evaluate('window.frontierGame')
                 assert recovered['status']=='running',recovered.get('error')
                 print('PASS: context loss reports an error and New skirmish recovers',flush=True)
+                (evidence/'validation-result.json').write_text(json.dumps({'status':'passed',
+                    'gameplay':True,'lifecycle':True,'subpath':'/rts/','build':final['build']},indent=2)+'\n')
         finally:
             if 'observed' in locals():
                 (evidence/'world-observed.json').write_text(json.dumps(observed,indent=2)+'\n')

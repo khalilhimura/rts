@@ -15,26 +15,42 @@ spec = importlib.util.spec_from_file_location('fetch_engine', ROOT/'tools/fetch-
 acquisition = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(acquisition)
 
-audit_spec = importlib.util.spec_from_file_location('check_dependencies', ROOT/'tools/check-dependencies.py')
+audit_spec = importlib.util.spec_from_file_location('check_dependencies', ROOT/'tools/check-browser-dependencies.py')
 audit = importlib.util.module_from_spec(audit_spec)
 audit_spec.loader.exec_module(audit)
 
 
 class ContentTests(unittest.TestCase):
+    def audit_inputs(self):
+        report = {'version': 1, 'projects': [{'path': 'browser'}]}
+        assets = {'libraries': {'Newtonsoft.Json/13.0.3': {}}}
+        inventory = {'version': 1, 'projects': [{'frameworks': [{'framework': 'net8.0',
+            'transitivePackages': [{'id': 'Newtonsoft.Json', 'resolvedVersion': '13.0.3'}]}]}]}
+        return report, assets, inventory
+
     def test_audit_rejects_transitive_advisory(self):
-        report = {'version': 1, 'projects': [{'path': name} for name in ['mod', 'game', 'common']]}
-        report['projects'][1]['frameworks'] = [{'transitivePackages': [{
+        report, assets, inventory = self.audit_inputs()
+        report['projects'][0]['frameworks'] = [{'transitivePackages': [{
             'id': 'Example.Vulnerable', 'resolvedVersion': '1.0',
             'vulnerabilities': [{'severity': 'Low', 'advisoryurl': 'https://example.invalid/advisory'}]
         }]}]
-        assets = {'libraries': {'NuGet.CommandLine/6.12.5': {}}}
         with self.assertRaisesRegex(ValueError, 'Vulnerable dependency'):
-            audit.validate(report, assets)
+            audit.validate(report, assets, inventory)
 
     def test_audit_rejects_unpatched_client(self):
-        report = {'version': 1, 'projects': [{'path': name} for name in ['mod', 'game', 'common']]}
-        with self.assertRaisesRegex(ValueError, 'Expected patched'):
-            audit.validate(report, {'libraries': {'NuGet.CommandLine/6.12.1': {}}})
+        report, assets, inventory = self.audit_inputs()
+        assets['libraries']['NuGet.CommandLine/6.12.1'] = {}
+        with self.assertRaisesRegex(ValueError, 'Desktop NuGet.CommandLine'):
+            audit.validate(report, assets, inventory)
+
+    def test_audit_rejects_incomplete_reports(self):
+        report, assets, inventory = self.audit_inputs()
+        audit.validate(report, assets, inventory)
+        with self.assertRaisesRegex(ValueError, 'Incomplete browser audit'):
+            audit.validate({'version': 1, 'projects': []}, assets, inventory)
+        report['messages'] = ['Audit service unavailable']
+        with self.assertRaisesRegex(ValueError, 'audit problems'):
+            audit.validate(report, assets, inventory)
 
     def test_cc0_sources_match_pinned_hashes(self):
         lock = json.loads((ROOT/'assets/sources/pixvoxel/manifest.json').read_text())

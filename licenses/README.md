@@ -7,4 +7,4 @@
 - Newly created prototype artwork: `ORIGINAL-ASSETS.txt`, under CC0 using the same full CC0 legal text.
 - Browser platform/input/GLSL: GPL-3.0-or-later; exact source commit, original hashes and adaptations in `browser/platform-imports.json`; preserved upstream COPYING and AUTHORS in `browser/licenses/`.
 
-The original SDK conduct/contribution files and original source copyright headers are retained. See `docs/PROVENANCE.md` for exact file mappings, source links and hashes.
+The inherited conduct file and original source copyright headers are retained; contribution guidance now describes the browser product. See `docs/PROVENANCE.md` for exact file mappings, source links and hashes.

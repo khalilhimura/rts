@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build the isolated managed OpenRA browser probe, never deploy it."""
 import argparse
+import importlib.util
 import gzip
 import hashlib
 import json
@@ -14,8 +15,14 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--skip-engine-build', action='store_true')
 args = parser.parse_args()
 if not args.skip_engine_build:
-    subprocess.run(['make'], cwd=ROOT, check=True)
-subprocess.run(['dotnet', 'build', 'browser/Frontier.Browser.Probe', '-c', 'Release', '-warnaserror'], cwd=ROOT, check=True)
+    subprocess.run(['python3','tools/build-browser-world.py'], cwd=ROOT, check=True)
+spec=importlib.util.spec_from_file_location('browser_engine',ROOT/'tools/prepare-browser-engine.py')
+module=importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+engine=module.prepare()
+subprocess.run(['dotnet','build','browser/Frontier.Browser.Probe','-c','Release','-warnaserror','-p:BrowserEngineRoot='+str(engine)],cwd=ROOT,check=True)
+for source in (ROOT/'browser/Frontier.Browser.Probe/wwwroot').rglob('*'):
+    if source.is_file(): shutil.copyfile(source,OUT/source.name)
 content = OUT/'content'
 content.mkdir(exist_ok=True)
 sources = {
@@ -40,8 +47,8 @@ report = {
     'cfStaticAssetLimitBytes': 25*1024*1024,
     'assetSource': 'https://opengameart.org/content/pixvoxel-colorful-isometric-wargame-sprites',
     'contentSha256': {name: hashlib.sha256((content/name).read_bytes()).hexdigest() for name in sources},
-    'assemblySha256': {name: hashlib.sha256((ROOT/'engine/bin'/name).read_bytes()).hexdigest()
-                       for name in ('OpenRA.Game.dll', 'OpenRA.Mods.Common.dll', 'OpenRA.Mods.Frontier.dll')},
+    'assemblySha256': {name: hashlib.sha256((engine/'bin'/name).read_bytes()).hexdigest()
+                       for name in ('OpenRA.Game.dll', 'OpenRA.Mods.Common.dll')},
 }
 assert report['largestFileBytes'] <= report['cfStaticAssetLimitBytes'], 'CF static file size limit exceeded'
 (OUT/'probe-build.json').write_text(json.dumps(report, indent=2)+'\n')

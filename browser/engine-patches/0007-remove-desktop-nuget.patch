@@ -1,0 +1,24 @@
+--- a/OpenRA.Mods.Common/OpenRA.Mods.Common.csproj
++++ b/OpenRA.Mods.Common/OpenRA.Mods.Common.csproj
+@@ -3,14 +3,19 @@
+     <ProjectReference Include="..\OpenRA.Game\OpenRA.Game.csproj">
+       <Private>False</Private>
+     </ProjectReference>
+-    <PackageReference Include="NuGet.CommandLine" Version="6.12.1" />
+     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+     <PackageReference Include="OpenRA-FuzzyLogicLibrary" Version="1.0.1" />
+     <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+     <PackageReference Include="MP3Sharp" Version="1.0.5" />
+     <PackageReference Include="NVorbis" Version="0.10.5" />
+     <PackageReference Include="TagLibSharp" Version="2.3.0" />
+-    <PackageReference Include="rix0rrr.BeaconLib" Version="1.0.2" />
+     <PackageReference Include="Pfim" Version="0.11.3" />
+   </ItemGroup>
++  <!-- Browser single-player does not include native LAN/server-list/lobby UI. -->
++  <ItemGroup>
++    <Compile Remove="ServerTraits/MasterServerPinger.cs" />
++    <Compile Remove="Widgets/Logic/ServerListLogic.cs" />
++    <Compile Remove="Widgets/Logic/MultiplayerLogic.cs" />
++    <Compile Remove="Widgets/Logic/Lobby/LobbyLogic.cs" />
++  </ItemGroup>
+ </Project>

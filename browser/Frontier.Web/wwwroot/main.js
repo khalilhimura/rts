@@ -72,7 +72,7 @@ try {
                 const elapsedMs=performance.now()-startedAt;
                 window.frontierGame.metrics={elapsedMs,ticksPerSecond:state.tick*1000/elapsedMs,
                     callbacksPerSecond:callbacks*1000/elapsedMs,meanStepMs:totalStepMs/callbacks,maxStepMs};
-                label.textContent=`Salt Basin · tick ${state.tick} · browser development build`;
+                label.textContent='Salt Basin · Frontier Collective';
                 if (now-reportedAt>10000) {
                     console.info('FRONTIER_BROWSER_STATE '+JSON.stringify(state));
                     reportedAt=now;
@@ -87,5 +87,8 @@ try {
 
 function fail(error) {
     window.frontierGame.status='failed';window.frontierGame.error=String(error);
-    label.textContent=String(error);console.error(error);
+    label.textContent=String(error).includes('Graphics context lost')
+        ? 'Graphics context lost. Choose New skirmish to restart.'
+        : 'Unable to run this skirmish. Choose New skirmish to retry.';
+    console.error(error);
 }

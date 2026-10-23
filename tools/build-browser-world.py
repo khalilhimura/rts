@@ -16,12 +16,13 @@ parser.add_argument('--output',type=Path,default=ROOT/'.runtime/browser-world')
 args=parser.parse_args()
 out=args.output.resolve()
 source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
-subprocess.run(['sh', 'fetch-engine.sh'], cwd=ROOT, check=True)
 spec=importlib.util.spec_from_file_location('browser_engine',ROOT/'tools/prepare-browser-engine.py')
 module=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 engine=module.prepare()
-subprocess.run(['dotnet','build','browser/Frontier.Web','-c','Release','-warnaserror','-p:BrowserEngineRoot='+str(engine),'-p:WasmAppDir='+str(out)],cwd=ROOT,check=True)
+# The SDK engine shares bin/ between Debug/Release. Rebuild so a prior style
+# check cannot leave Debug DLLs masquerading as an incremental Release output.
+subprocess.run(['dotnet','build','browser/Frontier.Web','-t:Rebuild','-c','Release','-warnaserror','-p:BrowserEngineRoot='+str(engine),'-p:WasmAppDir='+str(out)],cwd=ROOT,check=True)
 for source in (ROOT/'browser/Frontier.Web/wwwroot').rglob('*'):
     if source.is_file():
         target=out/source.relative_to(ROOT/'browser/Frontier.Web/wwwroot')
@@ -32,6 +33,18 @@ sources=[]
 for directory,prefix in [(ROOT/'mods/frontier','mods/frontier'),(ROOT/'engine/mods/common','mods/common'),(ROOT/'browser/glsl','glsl')]:
     sources.extend((p,prefix+'/'+p.relative_to(directory).as_posix()) for p in directory.rglob('*') if p.is_file())
 sources.append((ROOT/'engine/VERSION','VERSION'))
+previous_manifest=out/'content-manifest.json'
+new_paths={path for _,path in sources}
+if previous_manifest.exists():
+    for entry in json.loads(previous_manifest.read_text())['files']:
+        if entry['path'] not in new_paths:
+            stale=out/'content'/entry['path']
+            if stale.exists():
+                assert hashlib.sha256(stale.read_bytes()).hexdigest()==entry['sha256'],'Edited generated content preserved: '+str(stale)
+                stale.unlink()
+                parent=stale.parent
+                while parent!=out/'content' and not any(parent.iterdir()):
+                    parent.rmdir();parent=parent.parent
 files=[]
 for source,path in sources:
     target=out/'content'/path

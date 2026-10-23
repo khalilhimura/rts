@@ -6,10 +6,9 @@ Verified 2026-10-23. This repository is a modified OpenRA SDK project, not an EA
 
 | Component | Source pin | License / retained evidence |
 |---|---|---|
-| OpenRA Mod SDK | [20250330](https://github.com/OpenRA/OpenRAModSDK/tree/0059e22e0e3bfc862500aaaa9fe1aed4ea4e994a), commit `0059e22e0e3bfc862500aaaa9fe1aed4ea4e994a` | GPLv3; `COPYING`, original file headers, `docs/SDK-README.upstream.md` |
+| OpenRA Mod SDK | [20250330](https://github.com/OpenRA/OpenRAModSDK/tree/0059e22e0e3bfc862500aaaa9fe1aed4ea4e994a), commit `0059e22e0e3bfc862500aaaa9fe1aed4ea4e994a` | GPLv3; `COPYING`, original file headers, [upstream README](https://github.com/OpenRA/OpenRAModSDK/blob/0059e22e0e3bfc862500aaaa9fe1aed4ea4e994a/README.md) |
 | OpenRA engine | [release-20250330](https://github.com/OpenRA/OpenRA/tree/524b6abdf1874b0132a7b06c1f89c7012f60124c), commit `524b6abdf1874b0132a7b06c1f89c7012f60124c` | GPL-3.0-or-later per source headers; fetched source retains `COPYING`, `AUTHORS`, dependency notices; `licenses/OpenRA-AUTHORS.txt` preserves a copy |
 | SDK UI | SDK `mods/example/chrome/assets/dialog.png`, `glyphs.png`; cursor `default.png`; editor markers `mapeditor.png`, `mpspawn.png` and corresponding YAML | Retained from the above GPL SDK baseline; original chrome definitions adapted. The example logo was replaced by an original mark. |
-| SDK packaging artwork | Same pinned SDK, `packaging/artwork/*.png` | Retained unchanged under the SDK baseline license; placeholder installer icons/backgrounds are not used by the desktop prototype; packaging remains unvalidated |
 | Common UI and fonts | Pinned engine `mods/common`, including GNU FreeFont `FreeSans.ttf` / `FreeSansBold.ttf` | GPL according to engine `AUTHORS`; fetched with source, not duplicated or relicensed as CC0 |
 | Browser platform, DOM input and GLSL | [openra-wasm `wasm` branch](https://github.com/Baronvonbonbon/openra-wasm/tree/424fb8b08d98de057015bc2cfcaddeaf10f3cc14), commit `424fb8b08d98de057015bc2cfcaddeaf10f3cc14` | GPL-3.0-or-later; original hashes/adaptations in `browser/platform-imports.json`, preserved headers and `browser/licenses/`; no fork mods or retail archives imported |
 
@@ -17,7 +16,7 @@ Engine archive: `https://github.com/OpenRA/OpenRA/archive/524b6abdf1874b0132a7b0
 
 SHA-256: `401b46b32ebddd04ea5ad342528195afe555d0800a7bbb5e07d00f3eb5b9e2ec`
 
-`mod.config` and `tools/fetch-engine.py` pin and verify this archive before extraction. A source receipt is stored inside ignored `engine/`. Existing directories with a different/missing receipt are preserved. Unlike the stock SDK acquisition script, this project's script keeps `CheckFluentReferences.cs`; full localization lint is enabled. No engine gameplay source changes are required. The follow-up root `Directory.Build.targets` overrides the effective `NuGet.CommandLine` package from upstream 6.12.1 to patched 6.12.5 for GHSA-g4vj-cjjj-v7hg; the engine archive stays intact. `global.json` pins SDK 8.0.426. The stable engine's source includes unused classic-game mod definitions, but this project does not install their retail content.
+`browser/engine-source.json` and `tools/fetch-engine.py` pin and verify the archive before extraction, preserving unexpected existing directories. Browser changes live in tracked patches/additions and isolated generated source; the acquired archive remains intact. Full localization lint is enabled. Browser-only Common excludes native LAN/server-list/lobby UI and its BeaconLib/NuGet executable dependencies, retaining the unchanged shared LobbyFaction/DropDownOption data types from the pinned source; all remaining direct/transitive dependencies are audited. `global.json` pins SDK 8.0.426. The full upstream source contains unused classic-game definitions, but the browser stages only Frontier, common UI/fonts and the selected GLSL; no retail content is installed.
 
 ## PixVoxel models
 
@@ -40,4 +39,4 @@ The source models and machine-readable manifest are checked into `assets/sources
 
 Four building sprites, salt terrain, rocks, roads, salvage crystals, placement overlays, production clock, icons, tiny bitmap lettering, faction mark, map layout, faction names and game rules were created for this prototype on 2026-10-23. Reproducible generators are in `tools/generate-content.py`; no image-generation service or proprietary asset tools were used. New art/data images are dedicated to CC0 in `licenses/ORIGINAL-ASSETS.txt`; generator and runtime code and YAML rules use GPL-3.0-or-later. Sound notification definitions are intentionally silent. There is no music or imported audio.
 
-Changes to SDK source include the mod/project rename, skirmish loader, camera initialization, diagnostics, validation command, build acquisition and CI. Preserve notices when redistributing; the different art license does not change the engine/code license. Packaging is deferred and no installers or public release have been produced.
+Changes to SDK source include the mod/project rename, skirmish loader, camera initialization, diagnostics, validation command, build acquisition and CI. Preserve notices when redistributing; the different art license does not change the engine/code license. Native packaging and app entrypoints were removed after browser gameplay acceptance; notices and recoverable Git history are preserved.

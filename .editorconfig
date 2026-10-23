@@ -1260,3 +1260,7 @@ dotnet_diagnostic.RCS1239.severity = warning
 
 # Use element access.
 dotnet_diagnostic.RCS1246.severity = warning
+
+# Preserve mandatory unified-diff context markers.
+[browser/engine-patches/*.patch]
+trim_trailing_whitespace = false

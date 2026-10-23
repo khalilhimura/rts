@@ -23,13 +23,6 @@ SupportsMapsFrom: frontier
 
 LoadScreen: FrontierLoadScreen
 
-ServerTraits:
-	LobbyCommands
-	SkirmishLogic
-	PlayerPinger
-	MasterServerPinger
-	LobbySettingsNotification
-
 MapGrid:
 	TileSize: 32, 32
 	Type: Rectangular

@@ -167,7 +167,7 @@ data=header+b''.join(struct.pack('<HB',cells[x,y],0) for x in range(size) for y 
 data+=b''.join(bytes((1,ore[x,y])) if (x,y) in ore else b'\0\0' for x in range(size) for y in range(size))
 preview=Image.new('RGB',(size,size)); palette={0:(76,88,82),1:(109,115,108),2:(38,53,62)}
 for pos,tile in cells.items(): preview.putpixel(pos,(70,210,216) if pos in ore else palette[tile])
-for name in ('salt-basin','shellmap'):
+for name in ('salt-basin',):
     target=MOD/'maps'/name; (target/'map.bin').write_bytes(data); preview.resize((256,256),Image.Resampling.NEAREST).save(target/'map.png')
 print('Generated eight-direction sprites, original buildings/terrain/HUD assets, and Salt Basin map.')
 

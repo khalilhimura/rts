@@ -18,7 +18,7 @@ flat out uint vChannelType;
 flat out vec4 vDepthMask;
 flat out uint vDepthSampler;
 out vec4 vTint;
-	
+
 vec4 SelectChannelMask(uint x)
 {
 	switch (x)

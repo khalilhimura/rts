@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using OpenRA;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Platforms.Default;
+using OpenRA.Widgets;
 
 [assembly: SupportedOSPlatform("browser")]
 
@@ -60,6 +61,7 @@ namespace Frontier.Web
 			return JsonConvert.SerializeObject(new
 			{
 				inputModifiers = (int)WebInput.CurrentModifiers,
+				menuOpen = Ui.Root.GetOrNull("INGAME_MENU") != null,
 				tick = world.WorldTick,
 				type = world.Type.ToString(),
 				selected = world.Selection.Actors.Select(a => a.ActorID),

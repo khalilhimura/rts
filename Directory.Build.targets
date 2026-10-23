@@ -1,7 +1,0 @@
-<Project>
-  <!-- Keep the verified OpenRA source archive intact. Apply the minimum patched
-       NuGet client release for GHSA-g4vj-cjjj-v7hg during project evaluation. -->
-  <ItemGroup>
-    <PackageReference Update="NuGet.CommandLine" Version="6.12.5" />
-  </ItemGroup>
-</Project>

@@ -50,3 +50,13 @@
  using Eluant;
  using OpenRA.Mods.Common.Traits;
  using OpenRA.Primitives;
+--- a/OpenRA.Utility/Program.cs
++++ b/OpenRA.Utility/Program.cs
+@@ -29,6 +29,7 @@
+ 			Command = command;
+ 		}
+ 
++		[Obsolete("Formatter-based serialization is obsolete.")]
+ 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+ 		{
+ 			base.GetObjectData(info, context);

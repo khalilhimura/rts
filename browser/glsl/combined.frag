@@ -156,7 +156,7 @@ vec4 SamplePalettedBilinear(uint samplerIndex, vec2 coords, vec2 textureSize)
 vec4 ColorShift(vec4 c, float p)
 {
 	vec4 range = texture(ColorShifts, vec2(0.25, p));
- 	vec4 shift = texture(ColorShifts, vec2(0.75, p));
+	vec4 shift = texture(ColorShifts, vec2(0.75, p));
 
 	vec3 hsv = rgb2hsv(srgb2linear(c).rgb);
 	if (hsv.r > range.r && range.g >= hsv.r)

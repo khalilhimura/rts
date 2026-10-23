@@ -42,6 +42,7 @@
     "Preserve GL delegate StringBuilder marshal signatures with a documented local CA1838 exception",
     "Remove unused FreeType gzip stub; CanvasFont uses the unmodified staged TrueType files",
     "Use an automatic EffectiveWindowScale property to satisfy baseline style checks",
-    "Release held browser keys/buttons on canvas focus loss"
+    "Release held browser keys/buttons on canvas focus loss",
+    "Normalize inherited GLSL whitespace; shader logic is unchanged"
   ]
 }

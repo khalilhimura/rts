@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="$(BrowserEngineRoot)/OpenRA.Mods.Common/OpenRA.Mods.Common.csproj" />
-    <Compile Include="../../OpenRA.Mods.Frontier/**/*.cs" Exclude="../../OpenRA.Mods.Frontier/obj/**;../../OpenRA.Mods.Frontier/FrontierLoadScreen.cs" />
+    <Compile Include="../../OpenRA.Mods.Frontier/**/*.cs" Exclude="../../OpenRA.Mods.Frontier/obj/**" />
     <Compile Include="FrontierLoadScreen.cs" />
   </ItemGroup>
 </Project>
