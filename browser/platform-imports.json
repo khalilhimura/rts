@@ -43,6 +43,7 @@
     "Remove unused FreeType gzip stub; CanvasFont uses the unmodified staged TrueType files",
     "Use an automatic EffectiveWindowScale property to satisfy baseline style checks",
     "Release held browser keys/buttons on canvas focus loss",
-    "Normalize inherited GLSL whitespace; shader logic is unchanged"
+    "Normalize inherited GLSL whitespace; shader logic is unchanged",
+    "Handle WebGL context-loss errors without querying invalid driver strings"
   ]
 }

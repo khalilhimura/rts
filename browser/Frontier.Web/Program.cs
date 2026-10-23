@@ -4,6 +4,7 @@ using System.Runtime.Versioning;
 using Newtonsoft.Json;
 using OpenRA;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.Common.Widgets;
 using OpenRA.Platforms.Default;
 using OpenRA.Widgets;
 
@@ -62,6 +63,16 @@ namespace Frontier.Web
 			{
 				inputModifiers = (int)WebInput.CurrentModifiers,
 				menuOpen = Ui.Root.GetOrNull("INGAME_MENU") != null,
+				observerHud = Ui.Root.GetOrNull("OBSERVER_WIDGETS") != null,
+				buttons = VisibleWidgets(Ui.Root).OfType<ButtonWidget>()
+					.Where(w => w.Id is "RESUME" or "RESTART" or "CONFIRM_BUTTON" or "CANCEL_BUTTON")
+					.Select(w => new
+					{
+						id = w.Id,
+						x = w.RenderBounds.X + w.RenderBounds.Width / 2,
+						y = w.RenderBounds.Y + w.RenderBounds.Height / 2,
+						enabled = !w.IsDisabled()
+					}),
 				tick = world.WorldTick,
 				type = world.Type.ToString(),
 				selected = world.Selection.Actors.Select(a => a.ActorID),
@@ -87,6 +98,15 @@ namespace Frontier.Web
 					})
 				})
 			});
+		}
+
+		static IEnumerable<Widget> VisibleWidgets(Widget root)
+		{
+			if (!root.IsVisible()) yield break;
+			yield return root;
+			foreach (var child in root.Children)
+				foreach (var widget in VisibleWidgets(child))
+					yield return widget;
 		}
 
 		[JSExport]

@@ -17,6 +17,7 @@ parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--browser-path')
 parser.add_argument('--bundle',type=Path,default=ROOT/'.runtime/browser-world')
 parser.add_argument('--full-gameplay',action='store_true',help='Drive production, economy and the complete AI match through real canvas input')
+parser.add_argument('--lifecycle-only',action='store_true',help='Quick real-world input/restart/context-recovery check; does not replace full gameplay acceptance')
 args=parser.parse_args()
 out=args.bundle.resolve()
 evidence=ROOT/'.runtime/browser-world-evidence'
@@ -56,7 +57,7 @@ try:
                 log.write(message+'\n')
             print(message[:600],flush=True)
         page.on('console',lambda message:record(message.text))
-        page.on('pageerror',lambda error:record(str(error)))
+        page.on('pageerror',lambda error:record(error.stack or str(error)))
         def browser_until(expression,timeout):
             deadline=time.monotonic()+timeout/1000
             while time.monotonic()<deadline:
@@ -201,13 +202,30 @@ try:
                     'renderer':'headless SwiftShader','metrics':metrics,'configuredTicksPerSecond':25},indent=2)+'\n')
                 print('Measured browser performance: '+json.dumps(metrics),flush=True)
                 print('PASS: full original Frontier browser skirmish acceptance',flush=True)
+            if args.full_gameplay or args.lifecycle_only:
+                if args.lifecycle_only:
+                    # A normal player command reaches the real endgame quickly;
+                    # it does not replace the required full combat match in CI.
+                    page.keyboard.press('Enter')
+                    page.keyboard.type('/surrender',delay=50)
+                    page.keyboard.press('Enter')
+                    wait_until(lambda value:{p['state'] for p in value['latest']['players']}=={'Won','Lost'},
+                        'normal chat surrender reaches endgame',timeout=60)
+                if human(state())['state']=='Lost':
+                    wait_until(lambda value:value['latest']['observerHud'],'defeat UI transition settled',timeout=30)
                 # Real engine menu -> confirmation -> browser-native fresh session.
                 if not state()['latest']['menuOpen']: page.keyboard.press('Escape')
                 wait_until(lambda value:value['latest']['menuOpen'],'endgame menu visible',timeout=30)
-                click(203,435)
-                page.wait_for_timeout(1000)
-                page.keyboard.press('Enter')
-                browser_until('window.frontierGame?.status === "failed" || (window.frontierGame?.latest?.tick > 5 && window.frontierGame.latest.tick < 100)',timeout=180000)
+                previous_instance=page.evaluate('window.frontierGame.instance')
+                def click_widget(identifier):
+                    value=wait_until(lambda value:any(b['id']==identifier and b['enabled'] for b in value['latest']['buttons']),
+                        identifier+' visible and enabled',timeout=30)
+                    button=next(b for b in value['latest']['buttons'] if b['id']==identifier)
+                    print('Click widget: '+json.dumps(button),flush=True)
+                    click(button['x'],button['y'])
+                click_widget('RESTART')
+                click_widget('CONFIRM_BUTTON')
+                browser_until('window.frontierGame?.status === "failed" || (window.frontierGame?.instance !== '+json.dumps(previous_instance)+' && window.frontierGame?.latest?.tick > 5)',timeout=180000)
                 fresh=page.evaluate('window.frontierGame')
                 assert fresh['status']=='running',fresh.get('error')
                 assert all(p['state']=='Undefined' for p in fresh['latest']['players']),'Restart retained ended match'
@@ -215,12 +233,13 @@ try:
                 page.evaluate("document.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()")
                 browser_until('window.frontierGame.status === "failed"',timeout=10000)
                 assert 'Graphics context lost' in page.evaluate('window.frontierGame.error')
+                previous_instance=page.evaluate('window.frontierGame.instance')
                 page.locator('#restart').click()
-                browser_until('window.frontierGame?.status === "failed" || window.frontierGame?.latest?.tick > 5',timeout=180000)
+                browser_until('window.frontierGame?.status === "failed" || (window.frontierGame?.instance !== '+json.dumps(previous_instance)+' && window.frontierGame?.latest?.tick > 5)',timeout=180000)
                 recovered=page.evaluate('window.frontierGame')
                 assert recovered['status']=='running',recovered.get('error')
                 print('PASS: context loss reports an error and New skirmish recovers',flush=True)
-                (evidence/'validation-result.json').write_text(json.dumps({'status':'passed',
+                if args.full_gameplay: (evidence/'validation-result.json').write_text(json.dumps({'status':'passed',
                     'gameplay':True,'lifecycle':True,'subpath':'/rts/','build':final['build']},indent=2)+'\n')
         finally:
             if 'observed' in locals():

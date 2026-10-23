@@ -778,6 +778,11 @@ namespace OpenRA.Platforms.Default
 			}
 			while (type != GL_NO_ERROR);
 
+			// WebGL returns this code while the context is lost. Driver strings are
+			// then null; querying them in WriteGraphicsLog also breaks Emscripten.
+			if (errors.Contains(0x9242))
+				throw new InvalidOperationException("Graphics context lost. Restart the skirmish to recover.");
+
 			var stringErrors = string.Join(',', errors.Select(error => ErrorToText.TryGetValue(error, out var errorText) ? errorText : error.ToStringInvariant("X")));
 			WriteGraphicsLog($"GL Errors: {stringErrors}\n{new StackTrace()}");
 

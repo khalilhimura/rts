@@ -4,7 +4,7 @@ import { attachInput } from './input.js';
 
 const label = document.querySelector('#status');
 const canvas = document.querySelector('canvas');
-window.frontierGame = { status: 'loading', history: [], error: null };
+window.frontierGame = { status: 'loading', history: [], error: null, instance: performance.timeOrigin };
 canvas.addEventListener('webglcontextlost',event=>{
     event.preventDefault();
     fail(new Error('Graphics context lost. Choose New skirmish to reload the game.'));

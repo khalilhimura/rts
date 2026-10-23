@@ -30,6 +30,8 @@ python3 tools/smoke-browser-world.py --full-gameplay
 python3 tools/package-browser.py
 ```
 
+For a focused end-game lifecycle check without repeating production/combat, run `python3 tools/smoke-browser-world.py --lifecycle-only`; it uses normal `/surrender` chat input and does not satisfy the full packaging gate. Restart checks observe visible button bounds, confirm the dialog, wait for the defeat UI transition and require a new page instance.
+
 Select an installed Chromium with `--browser-path /path/to/chromium` on either browser test. The content check runs source/map/acquisition/audit regression tests, complete rules/Fluent lint, actual sprite-frame decoding and interface checks against staged browser content. Strict Debug compilation checks patched engine/platform/mod/host code with warnings as errors. Release rebuilds avoid stale shared Debug outputs. The dependency gate checks direct/transitive advisories, full resolved inventory and the absence of the unused desktop NuGet executable.
 
 The compatibility probe remains a required diagnostic: inherited MiniYaml rules, reflection-based production trait loading, original PNG decoding, complete RGBA GPU readback and scaled pointer input. Its small shader/input sink is not the world renderer; full gameplay is separately required. It now references the same isolated .NET 8 engine as the world.
